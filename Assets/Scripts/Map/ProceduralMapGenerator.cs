@@ -1,4 +1,5 @@
 using System;
+using NavMeshPlus.Components;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -254,6 +255,10 @@ public class ProceduralMapGenerator : MonoBehaviour
             obj.GetComponent<Renderer>().material = texture;
             // remove collider if you don�t need collisions on the floor
             DestroyImmediate(obj.GetComponent<BoxCollider2D>());
+            
+            // Add NavMeshModifier
+            obj.AddComponent<NavMeshModifier>();
+
         }
     }
 
@@ -274,21 +279,30 @@ public class ProceduralMapGenerator : MonoBehaviour
         {
             for (int y = 0; y < MapHeight; y++)
             {
-                // Check if the block is a void
                 if (mapGrid[x, y] != null && mapGrid[x, y].CompareTag("Void"))
                 {
-                    // Check surrounding blocks for at least one floor block
                     if (IsAdjacentToFloor(x, y))
                     {
+                        // Convert the void block to a wall
                         var obj = mapGrid[x, y];
                         obj.name = $"Wall ({x},{y})";
                         obj.tag = "Wall";
                         obj.GetComponent<Renderer>().material = WallTexture;
+                        NavMeshModifier modifier = obj.AddComponent<NavMeshModifier>();
+                        modifier.overrideArea = true;
+                        modifier.area = 1;
+                    }
+                    else
+                    {
+                        // If the void block is unnecessary, destroy it
+                        DestroyImmediate(mapGrid[x, y]);
+                        mapGrid[x, y] = null; // Ensure the reference is cleared
                     }
                 }
             }
         }
     }
+    
     private bool IsAdjacentToFloor(int x, int y)
     {
         for (int dx = -1; dx <= 1; dx++)
