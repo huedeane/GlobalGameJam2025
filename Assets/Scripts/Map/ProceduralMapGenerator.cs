@@ -36,13 +36,18 @@ public class ProceduralMapGenerator : MonoBehaviour
     private int _maxGenerationSteps = 1000;
 
     public GameObject NavMeshController;
+    
+    [Header("Debug")]
+    //DEBUG: Skip NavMesh generation for performance
+    public bool DEBUG_SKIP_NAVMESH_GENERATION = false;
 
     private void Start()
     {
         GenerateMap();
-        
+
         // Generate the NavMesh
-        NavMeshController.GetComponent<NavMeshSurface>().BuildNavMesh();
+        if (!DEBUG_SKIP_NAVMESH_GENERATION)
+            NavMeshController.GetComponent<NavMeshSurface>().BuildNavMesh();
     }
 
     public void GenerateMap()
