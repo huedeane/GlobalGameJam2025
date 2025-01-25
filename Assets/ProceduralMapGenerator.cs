@@ -191,6 +191,13 @@ public class ProceduralMapGenerator : MonoBehaviour
         Renderer renderer = obj.GetComponent<Renderer>();
         renderer.material.color = color;
         obj.transform.parent = parent.transform;
+        
+        //Swap Mesh Collider with Box Collider and Enable Collisions
+        DestroyImmediate(obj.GetComponent<MeshCollider>());
+        obj.AddComponent<BoxCollider2D>();
+        
+        BoxCollider2D boxCollider = obj.GetComponent<BoxCollider2D>();
+
 
         return obj;
     }
@@ -217,7 +224,7 @@ public class ProceduralMapGenerator : MonoBehaviour
             obj.tag = "Floor";
             obj.GetComponent<Renderer>().material.color = color;
             //Remove mesh collider
-            DestroyImmediate(obj.GetComponent<MeshCollider>());
+            DestroyImmediate(obj.GetComponent<BoxCollider2D>());
         }
     }
 

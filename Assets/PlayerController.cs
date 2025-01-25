@@ -16,6 +16,10 @@ public class PlayerController : MonoBehaviour
     {
         // Get the Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
+
+        // Ensure Rigidbody2D is set for physics interaction
+        rb.gravityScale = 0; // No gravity for a top-down game
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation; // Prevent unwanted rotation
     }
 
     void Update()
@@ -30,7 +34,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Apply movement based on Rigidbody2D
+        // Apply movement to Rigidbody2D using velocity
         rb.linearVelocity = movement * moveSpeed;
     }
 }
