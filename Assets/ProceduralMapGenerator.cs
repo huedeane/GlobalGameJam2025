@@ -4,11 +4,17 @@ using Random = Unity.Mathematics.Random;
 
 public class ProceduralMapGenerator : MonoBehaviour
 {
+    public GameObject Player;
+    
     public int MapWidth = 50;
     public int MapHeight = 50;
+    
+    public int RoomsizeLowerBound = 3;
+    public int RoomsizeUpperBound = 7;
 
     [Range(0, 100)]
     public int MinimumMapFillPercentage = 45;
+    [Range(0, 100)]
     public int MaxMapFillPercentage = 60;
 
     public GameObject WallPrefab;
@@ -31,7 +37,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     {
         // Reset and initialize
         GameObject _existingMap = GameObject.FindWithTag(mapName);
-        if (_existingMap != null) Destroy(_existingMap);
+        if (_existingMap != null) DestroyImmediate(_existingMap);
 
         rnd = new Random((uint)DateTime.Now.Ticks);
         mapGrid = new GameObject[MapWidth, MapHeight];
@@ -50,8 +56,10 @@ public class ProceduralMapGenerator : MonoBehaviour
         Vector2Int cursor = new Vector2Int(rnd.NextInt(MapWidth / 2 - 10, MapWidth / 2 + 10),
             rnd.NextInt(MapHeight / 2 - 10, MapHeight / 2 + 10));
         int directionCache = -1;
+        
+        Player.transform.position = new Vector3(cursor.x, cursor.y, 0);
 
-        CreateRoom(rnd.NextInt(3, 7), rnd.NextInt(3, 7), cursor);
+        CreateRoom(rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound), rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound), cursor);
 
         for (int i = 0; i < _maxGenerationSteps; i++)
         {
@@ -64,10 +72,10 @@ public class ProceduralMapGenerator : MonoBehaviour
             directionCache = direction;
 
             Vector2Int prevCursor = cursor; // Save the previous position
-            cursor = MoveCursor(cursor, direction, rnd.NextInt(3, 7));
+            cursor = MoveCursor(cursor, direction, rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound));
             cursor = ApplyCenterBias(cursor); // Pull cursor toward the center
 
-            CreateRoom(rnd.NextInt(3, 7), rnd.NextInt(3, 7), cursor);
+            CreateRoom(rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound), rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound), cursor);
             ConnectRooms(prevCursor, cursor); // Ensure connectivity
 
             if (i % 5 == 0 && CheckMapFill()) break; // Periodically check fill percentage
@@ -100,26 +108,56 @@ public class ProceduralMapGenerator : MonoBehaviour
     {
         Vector2Int current = from;
 
+        // Define hallway width with some random variance
+        int hallwayWidth = rnd.NextInt(2, 5); // Adjust the range to control the width
+
+        // Move horizontally towards the target
         while (current.x != to.x)
         {
             current.x += current.x < to.x ? 1 : -1;
-            SwapVoidToFloor(current.x, current.y, FloorPlaceholderColor);
+            CarveHallway(current, hallwayWidth, true); // Horizontal hallway
         }
 
+        // Move vertically towards the target
         while (current.y != to.y)
         {
             current.y += current.y < to.y ? 1 : -1;
-            SwapVoidToFloor(current.x, current.y, FloorPlaceholderColor);
+            CarveHallway(current, hallwayWidth, false); // Vertical hallway
+        }
+    }
+
+// Helper function to carve hallways
+    private void CarveHallway(Vector2Int position, int width, bool isHorizontal)
+    {
+        if (isHorizontal)
+        {
+            // Carve a horizontal hallway with width
+            for (int yOffset = -width / 2; yOffset <= width / 2; yOffset++)
+            {
+                SwapVoidToFloor(position.x, position.y + yOffset, FloorPlaceholderColor);
+            }
+        }
+        else
+        {
+            // Carve a vertical hallway with width
+            for (int xOffset = -width / 2; xOffset <= width / 2; xOffset++)
+            {
+                SwapVoidToFloor(position.x + xOffset, position.y, FloorPlaceholderColor);
+            }
         }
     }
 
     private bool CheckMapFill()
     {
         int mapFillPercentage = GetMapFillPercentage();
-        if (mapFillPercentage >= MinimumMapFillPercentage && mapFillPercentage <= MaxMapFillPercentage)
+        if (mapFillPercentage >= MinimumMapFillPercentage)
         {
-            Debug.Log($"Map filled to {mapFillPercentage}%!");
-            return true;
+            //Debug.Log($"Map filled to minimum of{mapFillPercentage}%!");
+            if( mapFillPercentage >= MaxMapFillPercentage)
+            {
+                Debug.Log($"Map filled to maximum of{mapFillPercentage}%! Breaking loop.");
+                return true;
+            }
         }
         return false;
     }
@@ -178,6 +216,8 @@ public class ProceduralMapGenerator : MonoBehaviour
             obj.name = $"Floor ({x},{y})";
             obj.tag = "Floor";
             obj.GetComponent<Renderer>().material.color = color;
+            //Remove mesh collider
+            DestroyImmediate(obj.GetComponent<MeshCollider>());
         }
     }
 
