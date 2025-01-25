@@ -23,8 +23,8 @@ public class ProceduralMapGenerator : MonoBehaviour
     [Header("Prefabs and Colors")]
     public GameObject WallPrefab;
     public GameObject FloorPrefab;
-    public Color WallPlaceholderColor = Color.black;
     public Material FloorTexture;
+    public Material WallTexture;
 
     [Header("Scaling")]
     public float scaleFactor = 1000f;
@@ -54,7 +54,7 @@ public class ProceduralMapGenerator : MonoBehaviour
         {
             for (int y = 0; y < MapHeight; y++)
             {
-                mapGrid[x, y] = GenerateVoid(x, y, WallPlaceholderColor, mapParent);
+                mapGrid[x, y] = GenerateVoid(x, y, mapParent);
             }
         }
 
@@ -95,9 +95,11 @@ public class ProceduralMapGenerator : MonoBehaviour
             if (i % 5 == 0 && CheckMapFill())
                 break;
         }
+        
+        ApplyWallTextureToSurroundingVoidBlocks();
     }
 
-    private GameObject GenerateVoid(int x, int y, Color color, GameObject parent)
+    private GameObject GenerateVoid(int x, int y, GameObject parent)
     {
         GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Quad);
 
@@ -109,17 +111,31 @@ public class ProceduralMapGenerator : MonoBehaviour
         obj.tag = "Void";
 
         var renderer = obj.GetComponent<Renderer>();
-        renderer.material.color = color;
         obj.transform.parent = parent.transform;
 
         // Swap MeshCollider for BoxCollider2D
         DestroyImmediate(obj.GetComponent<MeshCollider>());
         var boxCollider = obj.AddComponent<BoxCollider2D>();
         // Normally this will auto-scale with the transform in 2D. 
-        // If needed, you can manually set boxCollider.size.
-
+        // 
+        
+        //Make the void blocks transparent
+        renderer.material.color = new Color(0, 0, 0, 0);
         return obj;
     }
+
+
+    private void AddTextureToVoidItersectingWithFloor()
+    {
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int y = 0; y < MapHeight; y++)
+            {
+
+            }
+        }
+    }
+    
 
     private Vector2Int MoveCursor(Vector2Int cursor, int direction, int distance)
     {
@@ -236,7 +252,7 @@ public class ProceduralMapGenerator : MonoBehaviour
             obj.name = $"Floor ({x},{y})";
             obj.tag = "Floor";
             obj.GetComponent<Renderer>().material = texture;
-            // remove collider if you don’t need collisions on the floor
+            // remove collider if you donï¿½t need collisions on the floor
             DestroyImmediate(obj.GetComponent<BoxCollider2D>());
         }
     }
@@ -250,4 +266,48 @@ public class ProceduralMapGenerator : MonoBehaviour
         }
         return (int)(filledTiles / (float)(MapWidth * MapHeight) * 100);
     }
+    
+    // Call this after generating the map
+    private void ApplyWallTextureToSurroundingVoidBlocks()
+    {
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int y = 0; y < MapHeight; y++)
+            {
+                // Check if the block is a void
+                if (mapGrid[x, y] != null && mapGrid[x, y].CompareTag("Void"))
+                {
+                    // Check surrounding blocks for at least one floor block
+                    if (IsAdjacentToFloor(x, y))
+                    {
+                        var obj = mapGrid[x, y];
+                        obj.name = $"Wall ({x},{y})";
+                        obj.tag = "Wall";
+                        obj.GetComponent<Renderer>().material = WallTexture;
+                    }
+                }
+            }
+        }
+    }
+    private bool IsAdjacentToFloor(int x, int y)
+    {
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                int nx = x + dx;
+                int ny = y + dy;
+
+                // Skip out-of-bounds tiles
+                if (nx < 0 || nx >= MapWidth || ny < 0 || ny >= MapHeight)
+                    continue;
+
+                // Check if adjacent tile is a floor
+                if (mapGrid[nx, ny] != null && mapGrid[nx, ny].CompareTag("Floor"))
+                    return true;
+            }
+        }
+        return false;
+    }
+
 }
