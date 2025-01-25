@@ -35,9 +35,14 @@ public class ProceduralMapGenerator : MonoBehaviour
     private string mapName = "Map";
     private int _maxGenerationSteps = 1000;
 
+    public GameObject NavMeshController;
+
     private void Start()
     {
         GenerateMap();
+        
+        // Generate the NavMesh
+        NavMeshController.GetComponent<NavMeshSurface>().BuildNavMesh();
     }
 
     public void GenerateMap()
