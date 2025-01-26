@@ -440,8 +440,8 @@ public class ProceduralMapGenerator : MonoBehaviour
                         //Make sure enemies and items are more than 5 units away from each other
                         bool disableEnemySpawn = false;
                         bool disableItemSpawn = false;
-                        
-                        
+
+                        int seaweedCount = 0;
                         //If there is a non-seaweed node adjacent to this node, break to avoid important nodes right next to each other
                         foreach ((Node node, int distance) nearbyNode in nearbyNodes)
                         {
@@ -449,17 +449,11 @@ public class ProceduralMapGenerator : MonoBehaviour
                             {
                                 break;
                             }
-                            else if (regionData.ClusterSeaweed && nearbyNode.distance <= 2 && nearbyNode.node.type == NodeType.Seaweed)
+                            else if (regionData.ClusterSeaweed && nearbyNode.distance <= 1 && nearbyNode.node.type == NodeType.Seaweed)
                             {
-                                //10% chance to place a seaweed node and pass
-                                if (rnd.NextInt(0, 100) < 10)
-                                {
-                                    CreateNode(new Vector2Int(x, y), NodeType.Seaweed);
-                                    break;
-                                }
+                                seaweedCount++;
                             }
-                            
-                            if (nearbyNode.node.type == NodeType.Enemy)
+                            else if (nearbyNode.node.type == NodeType.Enemy)
                             {
                                 disableEnemySpawn = true;
                             }
@@ -470,6 +464,15 @@ public class ProceduralMapGenerator : MonoBehaviour
                             
                         }
                         
+                        //For each node, if there are 2 or more seaweed nodes within 2 units, break to avoid excessive seaweed
+                        int seaweedChance = 20 - seaweedCount * 5;
+                        
+                        //10% chance to place a seaweed node and pass
+                        if (seaweedCount > 0 && seaweedChance > 0 && rnd.NextInt(0, 100) < seaweedChance)
+                        {
+                            CreateNode(new Vector2Int(x, y), NodeType.Seaweed);
+                            continue;
+                        }
 
 
 
@@ -488,12 +491,15 @@ public class ProceduralMapGenerator : MonoBehaviour
                             //Determine the type of node to place based on the random number
                             if (random < regionData.ItemDensity)
                             {
-                                nodeType = disableItemSpawn ? NodeType.Seaweed : NodeType.Item;
+                                if (disableItemSpawn) continue;
+                 
+                                nodeType = NodeType.Item;
                             }
                             else if (random < regionData.ItemDensity + regionData.EnemyDensity)
                             {
+                                if (disableEnemySpawn) continue;
                                 
-                                nodeType = disableEnemySpawn ? NodeType.Seaweed : NodeType.Enemy;
+                                nodeType = NodeType.Enemy; 
                             }
                             else
                             {
