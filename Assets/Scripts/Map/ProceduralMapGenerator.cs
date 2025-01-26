@@ -53,6 +53,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     public bool IsGenerationDone = false;
 
     public GameObject[] MonsterPrefabs;
+    public GameObject[] ItemPrefabs;
     
     
     public int MaxMonsters = 5;
@@ -260,6 +261,20 @@ public class ProceduralMapGenerator : MonoBehaviour
                 break;
             case NodeType.Item:
                 obj.GetComponent<Renderer>().material.color = ItemNodeColor;
+                GameObject item;
+                if (manualGameObject)
+                    item = manualGameObject;
+                
+                else
+                {
+                    Debug.Log("No GameObject Passed - Choosing a random item");
+                    item = ItemPrefabs[rnd.NextInt(0, ItemPrefabs.Length)];
+                }
+                DestroyImmediate(obj);
+                
+                obj = Instantiate(item, new Vector3(position.x * scaleFactor, position.y * scaleFactor, 0), Quaternion.identity);
+                obj.transform.parent = GameObject.FindWithTag(mapName).transform;
+                
                 break;
             case NodeType.Seaweed:
                 obj.GetComponent<Renderer>().material.color = SeaweedNodeColor;
