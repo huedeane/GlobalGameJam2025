@@ -26,6 +26,9 @@ public class PlayerStats : MonoBehaviour
     public int MaxOxygen = 100;
     public int CurrentOxygen = 100;
 
+    public int CurrentEnergy = 100;
+    public int MaxEnergy = 100;
+
     public int MoveSpeed = 20;
     
     [SerializeField] public ItemType[] Inventory;
@@ -60,6 +63,15 @@ public class PlayerStats : MonoBehaviour
             {
                 Inventory[i] = ItemType.None;
             }
+        }
+    }
+
+    public void FixedUpdate()
+    {
+        //If Flashlight is equipped, reduce Energy by 1
+        if (GetCurrentItem() == ItemType.FlashLight)
+        {
+            CurrentEnergy -= 1;
         }
     }
 

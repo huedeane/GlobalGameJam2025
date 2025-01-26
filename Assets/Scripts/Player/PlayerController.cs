@@ -49,6 +49,20 @@ public class PlayerController : MonoBehaviour
 
         // Update sprite animation
         HandleAnimationFrames();
+
+        if (PlayerStats.Instance.GetCurrentItem() == PlayerStats.ItemType.FlashLight)
+        {
+            //If Energy is 0, disable Flashlight
+            if (PlayerStats.Instance.CurrentEnergy <= 0)
+            {
+                ToggleFlashlight(false);
+            }
+            //If Energy is greater than 0 and Flashlight is the current item, enable Flashlight
+            else
+            {
+                ToggleFlashlight(true);
+            }
+        }
     }
 
     /// <summary>

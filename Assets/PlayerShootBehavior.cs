@@ -8,7 +8,7 @@ public class PlayerShootBehavior : MonoBehaviour
     //On Left Mouse Button Click, shoot a bubble in the direction of the mouse
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && PlayerStats.Instance.GetCurrentItem() == PlayerStats.ItemType.BubbleGun)
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 playerPosition = transform.position;
@@ -17,6 +17,7 @@ public class PlayerShootBehavior : MonoBehaviour
 
             GameObject bubble = Instantiate(DefaultBubblePrefab, playerPosition, Quaternion.identity);
             bubble.GetComponent<Projectile>().SetTargetPosition(playerPosition + direction * 1000);
+            PlayerStats.Instance.CurrentOxygen -= 10;
         }
     }
     

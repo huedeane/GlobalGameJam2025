@@ -500,9 +500,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4496f9ffa54657e478a2db330e63de69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentInventorySlot: 0
   InventorySize: 6
-  MaxOxygen: 100
-  CurrentOxygen: 100
+  MaxOxygen: 310
+  CurrentOxygen: 310
+  CurrentEnergy: 310
+  MaxEnergy: 310
+  MoveSpeed: 20
   Inventory: 00000000010000000a0000000a0000000a0000000a000000
 --- !u!1 &6904426250179738745
 GameObject:
