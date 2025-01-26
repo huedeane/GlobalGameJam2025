@@ -49,10 +49,10 @@ public class DeerFish : MonoBehaviour
                     yield return new WaitUntil(() => ProceduralMapGenerator.IsGenerationDone == true);
 
                     SpriteAnimatior.SetBool("IsMoving", true);
-                    GameObject[] floors = GameObject.FindGameObjectsWithTag("Floor");
-                    int randomFloorIndex = new System.Random().Next(floors.Length);
-                    AgentTarget = GameObject.FindGameObjectsWithTag("Floor")[randomFloorIndex];
+
+                    AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
                     Agent.SetDestination(AgentTarget.transform.position);
+                    Debug.Log("Found Floor at: " + AgentTarget.transform.position); ;
                     yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 5f);
                     break;
                 case DeerFishState.Attack:

@@ -110,7 +110,7 @@ MonoBehaviour:
   - {fileID: -1736526774, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
   - {fileID: 953937398, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
   idleFrames:
-  - {fileID: 1983629150, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
+  - {fileID: -1736526774, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
   frameInterval: 0.1
 --- !u!58 &8404417617980322669
 CircleCollider2D:

@@ -1,22 +1,40 @@
 fileFormatVersion: 2
-guid: b1398b5d98610524996b5d0a2200e1a5
+guid: 8021e33f207c4fd4a960a46a2ee8106a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6866832159502873631
-    second: seaweed_0
+      213: 631382632268640613
+    second: norocksseaweed_0
   - first:
-      213: -308700167921021117
-    second: seaweed_1
+      213: -2935810787343912698
+    second: norocksseaweed_1
   - first:
-      213: -659326487495574027
-    second: seaweed_2
+      213: 3635353231295917681
+    second: norocksseaweed_2
   - first:
-      213: -7627825996108706357
-    second: seaweed_3
+      213: 3978988831576485997
+    second: norocksseaweed_3
   - first:
-      213: 2206664995264067806
-    second: seaweed_4
+      213: -765745359572003504
+    second: norocksseaweed_4
+  - first:
+      213: -4205290615874024182
+    second: norocksseaweed_5
+  - first:
+      213: -247891407386142261
+    second: norocksseaweed_6
+  - first:
+      213: 1318524680518918157
+    second: norocksseaweed_7
+  - first:
+      213: 4711036661690708837
+    second: norocksseaweed_8
+  - first:
+      213: -7914912674447796278
+    second: norocksseaweed_9
+  - first:
+      213: -5306180058698671351
+    second: norocksseaweed_10
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -63,7 +81,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 70
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -112,7 +130,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: seaweed_0
+      name: norocksseaweed_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,16 +143,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1eb4a90788c14b0a0800000000000000
-      internalID: -6866832159502873631
+      spriteID: bd80ef8316060964390a8b4eba0e01a0
+      internalID: 1391951322
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: seaweed_1
+      name: norocksseaweed_1
       rect:
         serializedVersion: 2
         x: 1000
@@ -147,16 +165,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 34fc6f435d647bbf0800000000000000
-      internalID: -308700167921021117
+      spriteID: 59f58f6f7afcfc741b06cfb12199599e
+      internalID: 489379281
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: seaweed_2
+      name: norocksseaweed_2
       rect:
         serializedVersion: 2
         x: 2000
@@ -169,16 +187,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5fdf1d98d0a99d6f0800000000000000
-      internalID: -659326487495574027
+      spriteID: 95c2d83f645ce08488f7925bc8772ccb
+      internalID: 382901935
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: seaweed_3
+      name: norocksseaweed_3
       rect:
         serializedVersion: 2
         x: 3000
@@ -191,16 +209,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bcd4375aba4842690800000000000000
-      internalID: -7627825996108706357
+      spriteID: f68a8f201bc3e8c4cb67fe41b7d76a70
+      internalID: -1779750235
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: seaweed_4
+      name: norocksseaweed_4
       rect:
         serializedVersion: 2
         x: 4000
@@ -213,10 +231,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ed8f00d2f16af9e10800000000000000
-      internalID: 2206664995264067806
+      spriteID: cb1a5e918695c6a44bb0a0dd2d1feb7a
+      internalID: -1190782094
       vertices: []
       indices: 
       edges: []
@@ -225,7 +243,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: be609c378032cf245a0fe1d3ffd54614
+    spriteID: 43296a9278de96540af55ebef243ab3c
     internalID: 0
     vertices: []
     indices: 
@@ -235,11 +253,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      seaweed_0: -6866832159502873631
-      seaweed_1: -308700167921021117
-      seaweed_2: -659326487495574027
-      seaweed_3: -7627825996108706357
-      seaweed_4: 2206664995264067806
+      norocksseaweed_0: 1391951322
+      norocksseaweed_1: 489379281
+      norocksseaweed_2: 382901935
+      norocksseaweed_3: -1779750235
+      norocksseaweed_4: -1190782094
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

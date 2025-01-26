@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
@@ -34,6 +36,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     public Color ItemNodeColor = Color.blue;
     
     public Color SeaweedNodeColor = Color.green;
+    public GameObject SeaweedPrefab;
 
     [Header("Scaling")]
     public float scaleFactor = 1000f;
@@ -48,6 +51,11 @@ public class ProceduralMapGenerator : MonoBehaviour
     public List<Node> Nodes = new List<Node>();
 
     public bool IsGenerationDone = false;
+
+    public GameObject[] MonsterPrefabs;
+    
+    
+    public int MaxMonsters = 5;
     
     public struct Node {
         public GameObject obj;
@@ -219,8 +227,9 @@ public class ProceduralMapGenerator : MonoBehaviour
         return obj;
     }
 
-    private void CreateNode(Vector2Int position, NodeType type)
+    private void CreateNode(Vector2Int position, NodeType type, GameObject manualGameObject = null)
     {
+        
         GameObject obj = GenerateVoid(position.x, position.y, GameObject.FindWithTag(mapName));
         obj.name = $"{type} Node ({position.x},{position.y})";
         //obj.tag = "Node";
@@ -229,6 +238,22 @@ public class ProceduralMapGenerator : MonoBehaviour
         {
             case NodeType.Enemy:
                 obj.GetComponent<Renderer>().material.color = EnemyNodeColor;
+                GameObject enemy;
+                if (manualGameObject)
+                    enemy = manualGameObject;
+                
+                else
+                {
+                    Debug.Log("No GameObject Passed - Choosing a random monster");
+                    enemy = MonsterPrefabs[rnd.NextInt(0, MonsterPrefabs.Length)];
+                }
+                DestroyImmediate(obj);
+                
+                //Instiate the enemy prefab at the proper position
+                obj = Instantiate(enemy, new Vector3(position.x * scaleFactor, position.y * scaleFactor, 0), Quaternion.identity);
+                obj.transform.parent = GameObject.FindWithTag(mapName).transform;
+                
+      
                 break;
             case NodeType.Spawn:
                 obj.GetComponent<Renderer>().material.color = SpawnNodeColor;
@@ -238,6 +263,17 @@ public class ProceduralMapGenerator : MonoBehaviour
                 break;
             case NodeType.Seaweed:
                 obj.GetComponent<Renderer>().material.color = SeaweedNodeColor;
+                //Create Seaweed Prefab at proper position
+                GameObject seaweed = Instantiate(SeaweedPrefab, obj.transform.position, Quaternion.identity);
+                
+                //Destroy the quad
+                DestroyImmediate(obj);
+                
+                obj = seaweed;
+                
+                //Set parent to the map
+                obj.transform.parent = GameObject.FindWithTag(mapName).transform;
+                
                 break;
         }
         
@@ -249,6 +285,7 @@ public class ProceduralMapGenerator : MonoBehaviour
         
         //Remove Box Collider
         DestroyImmediate(obj.GetComponent<BoxCollider2D>());
+        
         
         Node node = new Node
         {
@@ -404,6 +441,32 @@ public class ProceduralMapGenerator : MonoBehaviour
         //Populate a dictionary of subbiome data for more efficient access. Handle duplicates
         Dictionary<SubBiome, SubBiomeData> subBiomeDict = new Dictionary<SubBiome, SubBiomeData>();
         
+        //Generate an array of Monsters equal to the max number of monsters, populating sequentially so that all monsters are generated at least once
+        Queue<GameObject> monstersQueue = new Queue<GameObject>();
+
+        List<int> numbersUsed = new List<int>();
+        
+        for (int i = 0; i < MaxMonsters; i++)
+        {
+            if(numbersUsed.Count == MonsterPrefabs.Length)
+            {
+                numbersUsed.Clear();
+            }
+
+            int x, y = 0;
+            do
+            {
+                x = rnd.NextInt(0, MonsterPrefabs.Length);
+            } while (numbersUsed.Contains(x) && y++ < 1000);
+            
+            numbersUsed.Add(x);
+            monstersQueue.Enqueue(MonsterPrefabs[x]);
+        }
+        
+        Debug.Log("Monsters Queue: " + monstersQueue.Count);
+        
+        
+        
         foreach (SubBiomeData subBiome in SubBiomes)
         {
             if (!subBiomeDict.ContainsKey(subBiome.biome))
@@ -481,8 +544,10 @@ public class ProceduralMapGenerator : MonoBehaviour
                         //Determine if a node should be placed at this position
                         if (rnd.NextInt(0, 100) < regionData.GeneralDensity)
                         {
+                            GameObject manualGameObject = null;
+                            
                             //Determine the type of node to place
-                            NodeType nodeType = NodeType.Enemy;
+                            NodeType nodeType;
                             
                             //Add All Percentages together and generate a random number between 0 and the total
                             int total = regionData.ItemDensity + regionData.EnemyDensity + regionData.SeaweedDensity;
@@ -497,7 +562,12 @@ public class ProceduralMapGenerator : MonoBehaviour
                             }
                             else if (random < regionData.ItemDensity + regionData.EnemyDensity)
                             {
-                                if (disableEnemySpawn) continue;
+                                Debug.Log("Attempting to place an enemy node.");
+                                if (disableEnemySpawn || monstersQueue.Count == 0) continue;
+
+                                Debug.Log("Enemy Node Placed.");
+                                //Pop the first monster from the queue
+                                manualGameObject = monstersQueue.Dequeue();
                                 
                                 nodeType = NodeType.Enemy; 
                             }
@@ -506,7 +576,7 @@ public class ProceduralMapGenerator : MonoBehaviour
                                 nodeType = NodeType.Seaweed;
                             }
                             
-                            CreateNode(new Vector2Int(x, y), nodeType);
+                            CreateNode(new Vector2Int(x, y), nodeType, manualGameObject);
                         }
                     }
                 }
@@ -536,6 +606,27 @@ public class ProceduralMapGenerator : MonoBehaviour
         return (nearbyNodes, regionBiome);
     }
 
+    public GameObject GetRandomFloorTileObject()
+    {
+        List<GameObject> floorTiles = new List<GameObject>();
+        foreach (GameObject obj in mapGrid)
+        {
+            if(obj == null) continue;
+            if (obj.CompareTag("Floor"))
+            {
+                floorTiles.Add(obj);
+            }
+        }
+
+        if (floorTiles.Count == 0)
+        {
+            Debug.LogWarning("No floor tiles found in map.");
+            return null;
+        }
+
+        return floorTiles[rnd.NextInt(0, floorTiles.Count)];
+    }
+    
     private void AddStoneToBorderWalls(int x, int y)
     {
         if (IsAdjacentToFloor(x, y))

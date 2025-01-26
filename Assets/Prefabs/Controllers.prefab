@@ -561,7 +561,7 @@ GameObject:
   - component: {fileID: 4937037248294045495}
   m_Layer: 0
   m_Name: MapGenerator
-  m_TagString: Untagged
+  m_TagString: MapGenerator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -608,9 +608,15 @@ MonoBehaviour:
   SpawnNodeColor: {r: 1, g: 0, b: 1, a: 1}
   ItemNodeColor: {r: 0, g: 0, b: 1, a: 1}
   SeaweedNodeColor: {r: 0, g: 1, b: 0, a: 1}
+  SeaweedPrefab: {fileID: 4804317509651155240, guid: 876fff640dd35e040ac8aefc00e1687a, type: 3}
   scaleFactor: 10
   NavMeshController: {fileID: 6739599852622926141}
   IsGenerationDone: 1
+  MonsterPrefabs:
+  - {fileID: 8572027397133050091, guid: ae653ac2781545e4f8e6a01dc6786c20, type: 3}
+  - {fileID: 1880213155022009797, guid: 2a9d501caaf365d4d80f389cbf5d5fb5, type: 3}
+  - {fileID: 6954953253879702443, guid: 5a3a67e209353884cb62668bc0127f07, type: 3}
+  MaxMonsters: 5
   SubBiomes:
   - biome: 2
     GeneralDensity: 5
