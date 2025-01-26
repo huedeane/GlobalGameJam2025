@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public enum AnglerFishState
 {
@@ -17,6 +18,8 @@ public class AnglerFish : MonoBehaviour
     private AnglerFishState AIState;
     private int CurrentTimesAttacked = 0;
     public Animator SpriteAnimatior;
+    public Light2D AnglerIdleLight;
+    public Light2D AnglerEmergeLight;
 
     public CircleCollider2D DetectionCollider;
     public int NumberOfAttack = 10;
@@ -32,6 +35,8 @@ public class AnglerFish : MonoBehaviour
             switch (AIState)
             {
                 case AnglerFishState.Idle:
+                    AnglerIdleLight.enabled = true;
+                    AnglerEmergeLight.enabled = false;
                     break;
                 case AnglerFishState.Emerge:
                     SpriteAnimatior.SetBool("IsEmerge", true);
@@ -39,8 +44,12 @@ public class AnglerFish : MonoBehaviour
                     yield return new WaitUntil(() =>
                     {
                         AnimatorStateInfo stateInfo = SpriteAnimatior.GetCurrentAnimatorStateInfo(0);
+                        Debug.Log(stateInfo);
                         return stateInfo.IsName("EmergeMove") && stateInfo.normalizedTime >= 1.0f;
                     });
+                    AnglerIdleLight.enabled = false;
+                    AnglerEmergeLight.enabled = true;
+                    Debug.Log("here");
 
                     AIState = AnglerFishState.Attack;
                     break;
@@ -53,7 +62,6 @@ public class AnglerFish : MonoBehaviour
                     CurrentTimesAttacked = 0;
                     break;
             }
-            Debug.Log(AIState);
 
             yield return 0;
         }
@@ -67,7 +75,6 @@ public class AnglerFish : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("collide");
         if (collision.CompareTag("Player")) {
             AIState = AnglerFishState.Emerge;
         }
