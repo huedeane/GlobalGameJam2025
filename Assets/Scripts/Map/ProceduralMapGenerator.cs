@@ -1,5 +1,5 @@
 using System;
-using NavMeshPlus.Components;
+using Unity.AI.Navigation;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -35,7 +35,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     private string mapName = "Map";
     private int _maxGenerationSteps = 1000;
 
-    public MonoBehaviour NavMeshController;
+    public NavMeshSurface NavMeshController;
     
     [Header("Debug")]
     //DEBUG: Skip NavMesh generation for performance
@@ -44,14 +44,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     private void Start()
     {
         GenerateMap();
-
-        // Generate the NavMesh
-        if (!DEBUG_SKIP_NAVMESH_GENERATION && NavMeshController != null)
-        {
-            NavMeshController.SendMessage("BuildNavMesh");
-        }
-            
-          
+        
     }
 
     public void GenerateMap()
@@ -112,6 +105,14 @@ public class ProceduralMapGenerator : MonoBehaviour
         }
         
         ApplyWallTextureToSurroundingVoidBlocks();
+        
+        // Generate the NavMesh
+        if (!DEBUG_SKIP_NAVMESH_GENERATION && NavMeshController != null)
+        {
+            NavMeshController.SendMessage("BuildNavMesh");
+            NavMeshController.BuildNavMesh();
+            Debug.Log("NavMesh generated.");
+        }
     }
 
     private GameObject GenerateVoid(int x, int y, GameObject parent)

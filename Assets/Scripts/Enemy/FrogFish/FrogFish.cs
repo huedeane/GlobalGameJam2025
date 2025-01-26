@@ -36,9 +36,12 @@ public class FrogFish : MonoBehaviour
         //Initialize Value
         AIState = FrogFishState.Idle;
         DetectionCollider.radius = DetectionRadius;
+        Agent.updateRotation = false; 
         AttackCollider.radius = AttackRadius;
         while (true)
         {
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
             switch (AIState)
             {
                 case FrogFishState.Idle:
