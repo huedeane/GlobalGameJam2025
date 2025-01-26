@@ -13,7 +13,11 @@ public class Projectile : MonoBehaviour
     public float SineFrequency = 1f;
     
     [Header("General Projectile Settings")]
-    public float Speed = 100f; 
+    public float Speed = .2f; 
+    public float MinSpeed = 0.05f;
+
+    
+    public float ProjectileSpeedDampening = .99f;
     
     public float LifeSpanInSeconds = 5f;
 
@@ -26,16 +30,17 @@ public class Projectile : MonoBehaviour
         MovementStarted = true;
     }
     
+
     private void FixedUpdate()
     {
-        if(!MovementStarted)
+        if (!MovementStarted)
             return;
-        
-        if(TargetPosition == Vector2.zero)
+
+        if (TargetPosition == Vector2.zero)
         {
             MovementStarted = false;
         }
-        
+
         if (MoveOnSineWave)
         {
             SineWaveMovement();
@@ -44,14 +49,18 @@ public class Projectile : MonoBehaviour
         {
             LinearMovement();
         }
-        
+
         LifeSpanInSeconds -= Time.deltaTime;
-        
+
+        // Apply dampening but clamp to a minimum speed
+        Speed = Mathf.Max(Speed * ProjectileSpeedDampening, MinSpeed);
+
         if (LifeSpanInSeconds <= 0)
         {
             Destroy(gameObject);
         }
     }
+
     
     private void LinearMovement()
     {
