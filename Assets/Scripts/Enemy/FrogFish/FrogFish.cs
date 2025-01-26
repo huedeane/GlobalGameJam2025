@@ -31,6 +31,8 @@ public class FrogFish : MonoBehaviour
     public Animator SpriteAnimatior;
     public NavMeshAgent Agent;
     public int Damage;
+    public int MaxHealth;
+    public int Health;
 
     IEnumerator Start()
     {
@@ -65,11 +67,11 @@ public class FrogFish : MonoBehaviour
                     Agent.speed = 0;
                     yield return new WaitForSeconds(3f);
                     AIState = FrogFishState.RunAway;
-
                     break;
                 case FrogFishState.RunAway:
                     SpriteAnimatior.SetBool("IsMoving", true);
                     AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
+                    Agent.SetDestination(AgentTarget.transform.position);
                     Agent.speed = AttackMoveRate * 2;
                     yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 20f);
                     AIState = FrogFishState.ResetState;
@@ -80,6 +82,7 @@ public class FrogFish : MonoBehaviour
                     AttackCollider.enabled = true;
                     SpriteAnimatior.SetBool("IsMoving", false);
                     AIState = FrogFishState.Idle;
+                    Health = MaxHealth;
                     break;
             }
 
@@ -108,9 +111,6 @@ public class FrogFish : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(AIState);
-        Debug.Log(collision);
-        Debug.Log($"Trigger hit by: {collision.gameObject.name}");
         switch (AIState) {
             case FrogFishState.Idle:
                 if (collision.CompareTag("Player"))
@@ -130,7 +130,12 @@ public class FrogFish : MonoBehaviour
         }
         if (collision.CompareTag("Bubble")) 
         {
-            AIState = FrogFishState.Disoriented;
+            Destroy(collision.gameObject);
+            Health--;
+            StartCoroutine(Stun());
+            if (Health <= 0) { 
+                AIState = FrogFishState.Disoriented;
+            }
         }
         
         if (collision.CompareTag("Flashlight"))
@@ -138,6 +143,16 @@ public class FrogFish : MonoBehaviour
             AIState = FrogFishState.Disoriented;
         }
 
+    }
+
+    private IEnumerator Stun() {
+        
+        float currentSpeed = Agent.speed;
+        Agent.speed = 0;
+
+        yield return new WaitForSeconds(.5f);
+
+        currentSpeed = Agent.speed;
     }
 }
 
