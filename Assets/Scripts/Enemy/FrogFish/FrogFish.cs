@@ -58,6 +58,12 @@ public class FrogFish : MonoBehaviour
                     break;
                 case FrogFishState.Stalk:
                     SpriteAnimatior.SetBool("IsMoving", true);
+                    Vector3 direction = (AgentTarget.transform.position - transform.position).normalized;
+                    if (direction != Vector3.zero)
+                    {
+                        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 90f));
+                    }
                     Agent.SetDestination(AgentTarget.transform.position);
                     break;
                 case FrogFishState.Attack:
@@ -79,7 +85,6 @@ public class FrogFish : MonoBehaviour
                     SpriteAnimatior.SetBool("IsMoving", false);
                     break;
             }
-            Debug.Log(AIState);
             yield return 0;
         }
     }
