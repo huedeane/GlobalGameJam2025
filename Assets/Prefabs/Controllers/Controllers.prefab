@@ -410,6 +410,7 @@ MonoBehaviour:
   - {fileID: 6954953253879702443, guid: 5a3a67e209353884cb62668bc0127f07, type: 3}
   ItemPrefabs:
   - {fileID: 5161401157093409887, guid: 8a6e747e316499c45bdc9cbec9414512, type: 3}
+  BiomeCount: 4
   MaxMonsters: 5
   SubBiomes:
   - biome: 2

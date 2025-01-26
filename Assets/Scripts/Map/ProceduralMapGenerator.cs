@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.AI.Navigation;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
+using UnityEditor;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -54,7 +53,10 @@ public class ProceduralMapGenerator : MonoBehaviour
 
     public GameObject[] MonsterPrefabs;
     public GameObject[] ItemPrefabs;
+
+    public int BiomeCount = 4;
     
+    private Vector2 PlayerSpawnPoint = Vector2.zero;
     
     public int MaxMonsters = 5;
     
@@ -85,6 +87,17 @@ public class ProceduralMapGenerator : MonoBehaviour
         EnemyArea,
         TreasureTrove
     }
+    
+    struct BiomeMapCell
+    {
+        public SubBiome biome;
+        public int x1;
+        public int x2;
+        public int y1;
+        public int y2;
+    }
+    
+    private BiomeMapCell[] BiomeMap;
     
     [Serializable]
     private struct SubBiomeData
@@ -161,7 +174,8 @@ public class ProceduralMapGenerator : MonoBehaviour
             rnd.NextInt(MapHeight / 2 - 10, MapHeight / 2 + 10)
         );
 
-        Player.transform.position = new Vector3(cursor.x * scaleFactor, cursor.y * scaleFactor, 0); // <---- SCALED
+        Player.transform.position = new Vector3(cursor.x * scaleFactor, cursor.y * scaleFactor, 0); 
+        PlayerSpawnPoint = new Vector2(cursor.x, cursor.y);
 
         CreateRoom(rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound),
                    rnd.NextInt(RoomsizeLowerBound, RoomsizeUpperBound),
@@ -455,7 +469,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     {
         //Populate a dictionary of subbiome data for more efficient access. Handle duplicates
         Dictionary<SubBiome, SubBiomeData> subBiomeDict = new Dictionary<SubBiome, SubBiomeData>();
-        
+
         //Generate an array of Monsters equal to the max number of monsters, populating sequentially so that all monsters are generated at least once
         Queue<GameObject> monstersQueue = new Queue<GameObject>();
 
@@ -493,6 +507,8 @@ public class ProceduralMapGenerator : MonoBehaviour
                 Debug.LogWarning("Duplicate SubBiome found in SubBiomes array. Ignoring duplicate.");
             }
         }
+        
+        DivideMapIntoBiomes(subBiomeDict);
 
 
         
@@ -604,7 +620,7 @@ public class ProceduralMapGenerator : MonoBehaviour
         int radius = 5;
         
         List<(Node node, int distance)> nearbyNodes = new List<(Node node, int distance)>();
-        SubBiome regionBiome = SubBiome.OpenPlains;
+        SubBiome regionBiome = GetBiomeAtCoordinates(x, y);
         
         foreach(Node node in Nodes)
         {
@@ -683,5 +699,189 @@ public class ProceduralMapGenerator : MonoBehaviour
         }
         return false;
     }
+    
+    //Based on a selection of subbiomes, divide the map into regions
+private void DivideMapIntoBiomes(Dictionary<SubBiome, SubBiomeData> subBiomeDictionary)
+{
+    Debug.Log("Dividing Map into Biomes. Dictionary Passed: " + subBiomeDictionary.Count);
 
+    // Get dynamic bounds of the map
+    var (xMin, xMax, yMin, yMax) = GetMapBounds();
+
+    // Calculate the adjusted map size
+    int activeWidth = xMax - xMin + 1;
+    int activeHeight = yMax - yMin + 1;
+
+    // Adjust biome grid cell size
+    int cellWidth = Mathf.CeilToInt(activeWidth / (float)BiomeCount);
+    int cellHeight = Mathf.CeilToInt(activeHeight / (float)BiomeCount);
+
+    List<BiomeMapCell> biomeMap = new List<BiomeMapCell>();
+
+    // Separate spawn and non-spawn biomes
+    var spawnBiomes = GrabJustSpawnBiomes(subBiomeDictionary).Keys.ToList();
+    var nonSpawnBiomes = PruneSpawnBiome(subBiomeDictionary).Keys.ToList();
+
+    // Shuffle non-spawn biomes for randomness
+    ShuffleList(nonSpawnBiomes);
+
+    int biomeIndex = 0;
+
+    // Divide map into cells and assign biomes
+    for (int x = 0; x < BiomeCount; x++)
+    {
+        for (int y = 0; y < BiomeCount; y++)
+        {
+            // Adjust cell bounds to fit within the map
+            int cellXMin = xMin + x * cellWidth;
+            int cellXMax = Mathf.Min(cellXMin + cellWidth, xMax + 1);
+            int cellYMin = yMin + y * cellHeight;
+            int cellYMax = Mathf.Min(cellYMin + cellHeight, yMax + 1);
+
+            SubBiome assignedBiome;
+
+            // Check if the cell contains the player spawn point
+            if (PlayerSpawnPoint.x >= cellXMin && PlayerSpawnPoint.x < cellXMax &&
+                PlayerSpawnPoint.y >= cellYMin && PlayerSpawnPoint.y < cellYMax &&
+                spawnBiomes.Count > 0)
+            {
+                assignedBiome = spawnBiomes[rnd.NextInt(0, spawnBiomes.Count)];
+            }
+            else
+            {
+                // Assign a non-spawn biome (loop back if we run out)
+                assignedBiome = nonSpawnBiomes[biomeIndex % nonSpawnBiomes.Count];
+                biomeIndex++;
+            }
+
+            // Add the cell to the biome map
+            biomeMap.Add(new BiomeMapCell
+            {
+                biome = assignedBiome,
+                x1 = cellXMin,
+                x2 = cellXMax,
+                y1 = cellYMin,
+                y2 = cellYMax
+            });
+        }
+    }
+
+    // Convert the List back to an array for consistency
+    BiomeMap = biomeMap.ToArray();
+    Debug.Log("Biome Map successfully generated with adjusted bounds and " + BiomeMap.Length + " cells.");
+}
+
+    private (int xMin, int xMax, int yMin, int yMax) GetMapBounds()
+    {
+        int xMin = MapWidth, xMax = 0;
+        int yMin = MapHeight, yMax = 0;
+
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int y = 0; y < MapHeight; y++)
+            {
+                if (mapGrid[x, y] != null && mapGrid[x, y].CompareTag("Floor"))
+                {
+                    if (x < xMin) xMin = x;
+                    if (x > xMax) xMax = x;
+                    if (y < yMin) yMin = y;
+                    if (y > yMax) yMax = y;
+                }
+            }
+        }
+
+        // Log results for debugging
+        Debug.Log($"Map Bounds - xMin: {xMin}, xMax: {xMax}, yMin: {yMin}, yMax: {yMax}");
+
+        return (xMin, xMax, yMin, yMax);
+    }
+    
+    private void ShuffleList<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int randomIndex = rnd.NextInt(0, i + 1);
+            (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
+        }
+    }
+
+    private Dictionary<SubBiome, SubBiomeData> GrabJustSpawnBiomes(Dictionary<SubBiome, SubBiomeData> subBiomeDictionary)
+    {
+        //Remove all spawn biomes from the dictionary where the boolean playerSpawnBiome is true
+        Dictionary<SubBiome, SubBiomeData> prunedDictionary = new Dictionary<SubBiome, SubBiomeData>();
+
+        foreach (KeyValuePair<SubBiome, SubBiomeData> entry in subBiomeDictionary)
+        {
+            if (entry.Value.PlayerSpawnBiome)
+            {
+                prunedDictionary.Add(entry.Key, entry.Value);
+            }
+        }
+        
+        return prunedDictionary;
+    }
+    
+    private Dictionary<SubBiome, SubBiomeData> PruneSpawnBiome(Dictionary<SubBiome, SubBiomeData> subBiomeDictionary)
+    {
+        //Remove all spawn biomes from the dictionary where the boolean playerSpawnBiome is true
+        Dictionary<SubBiome, SubBiomeData> prunedDictionary = new Dictionary<SubBiome, SubBiomeData>();
+
+        foreach (KeyValuePair<SubBiome, SubBiomeData> entry in subBiomeDictionary)
+        {
+            if (!entry.Value.PlayerSpawnBiome)
+            {
+                prunedDictionary.Add(entry.Key, entry.Value);
+            }
+        }
+        
+        return prunedDictionary;
+    }
+    
+    private SubBiomeData GetDataForBiome(SubBiome biome)
+    {
+        foreach (SubBiomeData data in SubBiomes)
+        {
+            if (data.biome == biome)
+            {
+                return data;
+            }
+        }
+
+        return new SubBiomeData(SubBiome.OpenPlains, 0, 0, 0, 0, false);
+    }
+    
+    private SubBiome GetBiomeAtCoordinates(int x, int y)
+    {
+        foreach (BiomeMapCell cell in BiomeMap)
+        {
+            if (x >= cell.x1 && x < cell.x2 && y >= cell.y1 && y < cell.y2)
+            {
+                return cell.biome;
+            }
+        }
+
+        return SubBiome.OpenPlains;
+    }
+    
+    
+    //Draw Biome Grid OnDrawGizmos
+    private void OnDrawGizmos()
+    {
+        if (BiomeMap == null) return;
+        
+        foreach (BiomeMapCell cell in BiomeMap)
+        {
+            Gizmos.color = Color.red;
+            
+            //Draw Biome Grid - Remember to account for the scaling factor
+            Gizmos.DrawWireCube(new Vector3((cell.x1 + cell.x2) / 2 * scaleFactor, (cell.y1 + cell.y2) / 2 * scaleFactor, 0), new Vector3((cell.x2 - cell.x1) * scaleFactor, (cell.y2 - cell.y1) * scaleFactor, 0));
+
+            
+            //Draw Text Label
+            Vector3 labelPosition = new Vector3((cell.x1 + cell.x2) / 2 * scaleFactor, (cell.y1 + cell.y2) / 2 * scaleFactor, 0);
+       
+            //Handles.Label(labelPosition, cell.biome.ToString());
+        }
+        
+    }
 }
