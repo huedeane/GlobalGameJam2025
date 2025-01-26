@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     private float animationTimer;
     private int currentFrame;
 
+    public GameObject[] FlashlightObjects;
+
 
     void Start()
     {
@@ -111,10 +113,17 @@ public class PlayerController : MonoBehaviour
             PlayerStats.Instance.OnItemChange(1);
         }
         
-        //Check if the player's current item is a flashlight
-        if(PlayerStats.Instance.GetCurrentItem() == PlayerStats.ItemType.FlashLight)
-        {
+        bool flashlightActive = PlayerStats.Instance.GetCurrentItem() == PlayerStats.ItemType.FlashLight;
 
+        ToggleFlashlight(flashlightActive);
+            
+    }
+    
+    public void ToggleFlashlight(bool flashlightActive)
+    {
+        foreach (GameObject flashlight in FlashlightObjects)
+        {
+            flashlight.SetActive(flashlightActive);
         }
     }
 }
