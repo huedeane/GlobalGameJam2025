@@ -397,6 +397,7 @@ MonoBehaviour:
   FloorPrefab: {fileID: 0}
   FloorTexture: {fileID: 2100000, guid: 2e56be1e3c8ea1d4fbe005a726643955, type: 2}
   WallTexture: {fileID: 2100000, guid: 1ea1a023cdf1bfc4bbecb6facca4300b, type: 2}
+  TrapdoorPrefab: {fileID: 4932244531025402907, guid: 8895cd3aa8e5eb049b332bf7e26da6b6, type: 3}
   EnemyNodeColor: {r: 1, g: 0, b: 0, a: 1}
   SpawnNodeColor: {r: 1, g: 0, b: 1, a: 1}
   ItemNodeColor: {r: 0, g: 0, b: 1, a: 1}
@@ -412,8 +413,12 @@ MonoBehaviour:
   ItemPrefabs:
   - {fileID: 5161401157093409887, guid: 8a6e747e316499c45bdc9cbec9414512, type: 3}
   - {fileID: 5161401157093409887, guid: a6b5c74c9882226498553ba11341b576, type: 3}
+  - {fileID: 5161401157093409887, guid: a6b5c74c9882226498553ba11341b576, type: 3}
+  - {fileID: 5161401157093409887, guid: 65db85956b17e7a42ba2de41831759d8, type: 3}
+  - {fileID: 5161401157093409887, guid: b3a17213787ad194d92eda696a7b43c4, type: 3}
   BiomeCount: 4
   MaxMonsters: 5
+  TrapdoorCount: 3
   SubBiomes:
   - biome: 2
     GeneralDensity: 5
@@ -510,6 +515,7 @@ MonoBehaviour:
   MoveSpeed: 20
   CurrentMoney: 0
   Quota: 1000
+  GameOver: {fileID: 0}
   Inventory: 00000000010000000a0000000a0000000a0000000a000000
 --- !u!1 &6904426250179738745
 GameObject:
