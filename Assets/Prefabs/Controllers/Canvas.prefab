@@ -974,7 +974,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e27ed984bcad52e479e54a9e31313909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NotificationText: {fileID: 0}
+  NotificationText: {fileID: 4561471532616126011}
 --- !u!23 &4599853591588999127
 MeshRenderer:
   m_ObjectHideFlags: 0
