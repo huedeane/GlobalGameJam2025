@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,30 +14,21 @@ public enum DeerFishState
 public class DeerFish : MonoBehaviour
 {
     private DeerFishState AIState;
-    private int CurrentTimesAttacked = 0;
     private GameObject AgentTarget;
 
     public Animator SpriteAnimatior;
     public NavMeshAgent Agent;
-    public CircleCollider2D DetectionCollider;
-    public float DetectionRadius = .25f;
-    public int NumberOfAttack = 10;
+    public float WanderMoveRate = 10f;
+    public float AttackMoveRate = 20f;
     public ProceduralMapGenerator ProceduralMapGenerator;
+    public int Damage;
 
 
     IEnumerator Start()
     {
         //Initialize Value
         AIState = DeerFishState.Wander;
-        DetectionCollider.radius = DetectionRadius;
         ProceduralMapGenerator = GameObject.FindGameObjectWithTag("MapGenerator").GetComponent<ProceduralMapGenerator>();
-
-        //Log whether the agent is on the navmesh
-        Debug.Log("Is On NavMesh: " + Agent.isOnNavMesh);
-        //Log the agent's destination
-        Debug.Log(Agent.destination);
-        //Log whether the agent is blocked 
-        Debug.Log(Agent.isPathStale);
 
         while (true)
         {
@@ -47,18 +39,19 @@ public class DeerFish : MonoBehaviour
                     yield return new WaitUntil(() => ProceduralMapGenerator.IsGenerationDone == true);
 
                     SpriteAnimatior.SetBool("IsMoving", true);
-
+                    Agent.speed = WanderMoveRate;
                     AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
                     Agent.SetDestination(AgentTarget.transform.position);
-                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 5f);
+                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 5f || AIState == DeerFishState.Attack);
                     break;
                 case DeerFishState.Attack:
-                    CurrentTimesAttacked++;
+                    Agent.SetDestination(AgentTarget.transform.position);
+                    Agent.speed = AttackMoveRate;
                     break;
                 case DeerFishState.Disoriented:
                     break;
                 case DeerFishState.ResetState:
-                    CurrentTimesAttacked = 0;
+
                     AIState = DeerFishState.Wander;
                     break;
             }
@@ -81,6 +74,11 @@ public class DeerFish : MonoBehaviour
         
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        PlayerStats.Instance.CurrentOxygen -= Damage;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         switch (AIState)
@@ -88,6 +86,8 @@ public class DeerFish : MonoBehaviour
             case DeerFishState.Wander:
                 if (collision.CompareTag("Flashlight"))
                 {
+                    
+                    AgentTarget = collision.GetComponentInParent<PlayerController>().GameObject();
                     AIState = DeerFishState.Attack;
                 }
                 break;

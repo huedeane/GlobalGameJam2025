@@ -30,6 +30,7 @@ public class FrogFish : MonoBehaviour
     public CircleCollider2D AttackCollider;
     public Animator SpriteAnimatior;
     public NavMeshAgent Agent;
+    public int Damage;
 
     IEnumerator Start()
     {
@@ -70,7 +71,7 @@ public class FrogFish : MonoBehaviour
                     SpriteAnimatior.SetBool("IsMoving", true);
                     AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
                     Agent.speed = AttackMoveRate * 2;
-                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 10f);
+                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 20f);
                     AIState = FrogFishState.ResetState;
                     break;
                 case FrogFishState.ResetState:
@@ -98,9 +99,16 @@ public class FrogFish : MonoBehaviour
             Agent.SetDestination(AgentTarget.transform.position);
         }
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        PlayerStats.Instance.CurrentOxygen -= Damage;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log(AIState);
+        Debug.Log(collision);
+        Debug.Log($"Trigger hit by: {collision.gameObject.name}");
         switch (AIState) {
             case FrogFishState.Idle:
                 if (collision.CompareTag("Player"))
@@ -122,7 +130,7 @@ public class FrogFish : MonoBehaviour
         {
             AIState = FrogFishState.Disoriented;
         }
-        Debug.Log(AIState, collision);
+        
         if (collision.CompareTag("Flashlight"))
         {
             AIState = FrogFishState.Disoriented;
