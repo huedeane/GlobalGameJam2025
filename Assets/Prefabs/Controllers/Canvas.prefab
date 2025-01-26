@@ -1635,6 +1635,10 @@ MonoBehaviour:
     ItemSprite: {fileID: 4337684191699249041, guid: 041a869e903e57847890a43171696e70, type: 3}
   - ItemType: 9
     ItemSprite: {fileID: 1801263428120863714, guid: 041a869e903e57847890a43171696e70, type: 3}
+  - ItemType: 4
+    ItemSprite: {fileID: -2047445867847719061, guid: 4af947df45a31b844a728beb0cd07bab, type: 3}
+  - ItemType: 8
+    ItemSprite: {fileID: -7573354855677281409, guid: 041a869e903e57847890a43171696e70, type: 3}
   SlotObjects:
   - {fileID: 0}
   - {fileID: 0}

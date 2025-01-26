@@ -10,7 +10,7 @@ public class PlayerStats : MonoBehaviour
         FlashLight,
         Bomb,
         Whistle,
-        MoneyGun,
+        Money,
         Flashbang,
         AlienStatue,
         OxygenGun,
@@ -131,7 +131,7 @@ public class PlayerStats : MonoBehaviour
                 break;
             case ItemType.Whistle:
                 break;
-            case ItemType.MoneyGun:
+            case ItemType.Money:
                 break;
             case ItemType.Flashbang:
                 break;
@@ -140,6 +140,7 @@ public class PlayerStats : MonoBehaviour
             case ItemType.OxygenGun:
                 break;
             case ItemType.Flippers:
+                MoveSpeed = MoveSpeed * 2;
                 break;
             case ItemType.OxygenTank:
                 break;
@@ -158,7 +159,7 @@ public class PlayerStats : MonoBehaviour
                 break;
             case ItemType.Whistle:
                 break;
-            case ItemType.MoneyGun:
+            case ItemType.Money:
                 break;
             case ItemType.Flashbang:
                 break;
@@ -167,6 +168,7 @@ public class PlayerStats : MonoBehaviour
             case ItemType.OxygenGun:
                 break;
             case ItemType.Flippers:
+                MoveSpeed = MoveSpeed / 2;
                 break;
             case ItemType.OxygenTank:
                 break;
@@ -217,7 +219,7 @@ public class PlayerStats : MonoBehaviour
                 return 50;
             case ItemType.Whistle:
                 return 50;
-            case ItemType.MoneyGun:
+            case ItemType.Money:
                 return 300;
             case ItemType.Flashbang:
                 return 50;
