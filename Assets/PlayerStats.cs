@@ -140,7 +140,7 @@ public class PlayerStats : MonoBehaviour
             case ItemType.OxygenGun:
                 break;
             case ItemType.Flippers:
-                MoveSpeed = MoveSpeed * 2;
+                MoveSpeed = MoveSpeed/2;
                 break;
             case ItemType.OxygenTank:
                 break;
@@ -168,7 +168,7 @@ public class PlayerStats : MonoBehaviour
             case ItemType.OxygenGun:
                 break;
             case ItemType.Flippers:
-                MoveSpeed = MoveSpeed / 2;
+                MoveSpeed = MoveSpeed*2;
                 break;
             case ItemType.OxygenTank:
                 break;
