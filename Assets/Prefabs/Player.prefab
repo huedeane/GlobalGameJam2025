@@ -320,7 +320,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -82563761, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -344,7 +344,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6ebfcafb0fe8c140a5f23af4ef6b75c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 20
   walkingForwardFrames:
   - {fileID: -1736526774, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
   - {fileID: -604590890, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
@@ -353,6 +352,7 @@ MonoBehaviour:
   idleFrames:
   - {fileID: 1983629150, guid: 0e2fdd41bf0c1044a8044e868d863f4a, type: 3}
   frameInterval: 0.1
+  FlashlightObjects: []
 --- !u!58 &663617918493573885
 CircleCollider2D:
   m_ObjectHideFlags: 0

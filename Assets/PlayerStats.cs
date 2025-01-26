@@ -52,6 +52,16 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    public Vector2 GetPlayerPosition()
+    {
+        //Find the player object
+        GameObject player = GameObject.Find("Player");
+        
+        
+        //Return the player's position
+        return player.transform.position;
+    }
+    
     private void Start()
     {
         //Check if Inventory has been initialized
