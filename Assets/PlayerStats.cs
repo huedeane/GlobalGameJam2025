@@ -21,8 +21,8 @@ public class PlayerStats : MonoBehaviour
     
     public int InventorySize = 5;
 
-    public int MaxOxygen = 100;
-    public int CurrentOxygen = 100;
+    public int MaxOxygen = 310;
+    public int CurrentOxygen = 310;
     
     [SerializeField] public ItemType[] Inventory;
     
