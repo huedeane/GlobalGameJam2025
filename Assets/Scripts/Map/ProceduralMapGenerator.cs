@@ -131,7 +131,7 @@ public class ProceduralMapGenerator : MonoBehaviour
 
         // Swap MeshCollider for BoxCollider2D
         DestroyImmediate(obj.GetComponent<MeshCollider>());
-        var boxCollider = obj.AddComponent<BoxCollider2D>();
+        BoxCollider2D boxCollider = obj.AddComponent<BoxCollider2D>();
         // Normally this will auto-scale with the transform in 2D. 
         // 
         

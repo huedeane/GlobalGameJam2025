@@ -38,6 +38,14 @@ public class FrogFish : MonoBehaviour
         DetectionCollider.radius = DetectionRadius;
         Agent.updateRotation = false; 
         AttackCollider.radius = AttackRadius;
+        
+        //Log whether the agent is on the navmesh
+        Debug.Log("Is On NavMesh: " + Agent.isOnNavMesh);
+        //Log the agent's destination
+        Debug.Log(Agent.destination);
+        //Log whether the agent is blocked 
+        Debug.Log(Agent.isPathStale);
+        
         while (true)
         {
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);

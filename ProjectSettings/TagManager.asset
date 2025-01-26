@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Floor
   - Map
+  - Bubble
   layers:
   - Default
   - TransparentFX
