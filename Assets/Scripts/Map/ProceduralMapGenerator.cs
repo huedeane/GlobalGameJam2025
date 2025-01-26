@@ -284,6 +284,13 @@ public class ProceduralMapGenerator : MonoBehaviour
                 }
                 DestroyImmediate(obj);
                 
+                //Verify that position is not within 30 units of the player's current position
+                if (Vector2.Distance(Player.transform.position, new Vector3(position.x * scaleFactor, position.y * scaleFactor, 0)) < 30)
+                {
+                    Debug.Log("Enemy Node too close to player. Skipping.");
+                    return;
+                }
+                
                 //Instiate the enemy prefab at the proper position
                 obj = Instantiate(enemy, new Vector3(position.x * scaleFactor, position.y * scaleFactor, 0), Quaternion.identity);
                 obj.transform.parent = GameObject.FindWithTag(mapName).transform;

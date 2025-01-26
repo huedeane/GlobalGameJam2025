@@ -14,6 +14,7 @@ public class Trapdoor : MonoBehaviour
     
     void OnTriggerExit(Collider other)
     {
+        Debug.Log("Player left trapdoor area");
         if (other.gameObject.CompareTag("Player"))
         {
             NotificationTextController.Instance.ClearNotification();
