@@ -4,8 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float moveSpeed = 2f;
 
     [Header("Animation Settings")]
     public Sprite[] walkingForwardFrames;
@@ -47,7 +45,7 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         // Apply velocity
-        rb.linearVelocity = movement * moveSpeed;
+        rb.linearVelocity = movement * PlayerStats.Instance.MoveSpeed;
 
         // Update sprite animation
         HandleAnimationFrames();
