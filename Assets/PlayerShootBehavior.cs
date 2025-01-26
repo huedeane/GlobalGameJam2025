@@ -19,6 +19,24 @@ public class PlayerShootBehavior : MonoBehaviour
             bubble.GetComponent<Projectile>().SetTargetPosition(playerPosition + direction * 1000);
             PlayerStats.Instance.CurrentOxygen -= 10;
         }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            PlayerStats.ItemType currentItem = PlayerStats.Instance.GetCurrentItem();
+            int ItemValue = PlayerStats.Instance.GetItemValue(currentItem);
+            if (currentItem != PlayerStats.ItemType.BubbleGun && ItemValue > 0)
+            {
+                
+                PlayerStats.Instance.SetCurrentItem(PlayerStats.ItemType.None);
+                PlayerStats.Instance.CurrentMoney += ItemValue;
+                
+            }
+            else if (currentItem == PlayerStats.ItemType.OxygenTank)
+            {
+                PlayerStats.Instance.SetCurrentItem(PlayerStats.ItemType.None);
+                PlayerStats.Instance.CurrentOxygen += PlayerStats.Instance.MaxOxygen/3;
+                
+            }
+        }
     }
     
     //OnDrawGizmos, draw a line from the player to the mouse position using the same implementation as above

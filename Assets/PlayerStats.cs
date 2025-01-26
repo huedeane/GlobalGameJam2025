@@ -30,6 +30,9 @@ public class PlayerStats : MonoBehaviour
     public int MaxEnergy = 100;
 
     public int MoveSpeed = 20;
+
+    public int CurrentMoney = 0;
+    public int Quota = 1000;
     
     [SerializeField] public ItemType[] Inventory;
     
@@ -80,6 +83,7 @@ public class PlayerStats : MonoBehaviour
             {
                 CurrentEnergy -= 1; // Reduce energy
                 frameCounter = 0;   // Reset the counter
+                CurrentOxygen -= 1; // Reduce oxygen
             }
         }
         else
@@ -184,6 +188,42 @@ public class PlayerStats : MonoBehaviour
         return false;
     }
 
+    public void SetCurrentItem(ItemType type)
+    {
+        Inventory[CurrentInventorySlot] = type;
+        OnItemChange(0);
+    }
+    
+    public int GetItemValue(ItemType type)
+    {
+        switch (type)
+        {
+            case ItemType.BubbleGun:
+                return 0;
+            case ItemType.FlashLight:
+                return 0;
+            case ItemType.Bomb:
+                return 50;
+            case ItemType.Whistle:
+                return 50;
+            case ItemType.MoneyGun:
+                return 300;
+            case ItemType.Flashbang:
+                return 50;
+            case ItemType.AlienStatue:
+                return 100;
+            case ItemType.OxygenGun:
+                return 0;
+            case ItemType.Flippers:
+                return 50;
+            case ItemType.OxygenTank:
+                return 0;
+            case ItemType.None:
+                return 0;
+            default:
+                return 0;
+        }
+    }
     
     
 }

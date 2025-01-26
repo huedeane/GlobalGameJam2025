@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Import TextMeshPro namespace
 
 public class PlayerInventoryHandler : MonoBehaviour
 {
@@ -72,6 +73,22 @@ public class PlayerInventoryHandler : MonoBehaviour
             overlayRect.anchorMax = Vector2.one;
             overlayRect.offsetMin = Vector2.zero;
             overlayRect.offsetMax = Vector2.zero;
+
+            // Create a TextMeshPro UI element above the slot
+            GameObject textObject = new GameObject("ValueText");
+            textObject.transform.SetParent(SlotObjects[i].transform, false);
+
+            TextMeshProUGUI textMeshPro = textObject.AddComponent<TextMeshProUGUI>();
+            textMeshPro.alignment = TextAlignmentOptions.Center;
+            textMeshPro.fontSize = 24; // Adjust font size as needed
+            textMeshPro.color = Color.white;
+
+            RectTransform textRect = textObject.GetComponent<RectTransform>();
+            textRect.anchorMin = new Vector2(0.5f, 1f); // Anchor to the top-center of the slot
+            textRect.anchorMax = new Vector2(0.5f, 1f);
+            textRect.pivot = new Vector2(0.5f, 0f); // Pivot at the bottom-center
+            textRect.anchoredPosition = new Vector2(0, 20); // Position slightly above the slot
+            textRect.sizeDelta = new Vector2(100, 30); // Adjust size to fit text
         }
 
         SyncInventorySprites();
@@ -101,6 +118,24 @@ public class PlayerInventoryHandler : MonoBehaviour
             {
                 slotImage.sprite = null;
                 slotImage.enabled = false; // Hide the Image if there's no sprite
+            }
+
+            // Update the value text
+            Transform textTransform = slot.transform.Find("ValueText");
+            if (textTransform != null)
+            {
+                TextMeshProUGUI valueText = textTransform.GetComponent<TextMeshProUGUI>();
+                int itemValue = PlayerStats.Instance.GetItemValue(slotItemType); // Call the method to get the value of the item
+                if (itemValue > 0)
+                {
+                    valueText.text = $"${itemValue}";
+                    valueText.enabled = true; // Show the text if value is greater than 0
+                }
+                else
+                {
+                    valueText.text = "";
+                    valueText.enabled = false; // Hide the text if value is 0
+                }
             }
             
             if (i == PlayerStats.Instance.CurrentInventorySlot)

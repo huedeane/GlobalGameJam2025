@@ -411,6 +411,7 @@ MonoBehaviour:
   - {fileID: 6954953253879702443, guid: 5a3a67e209353884cb62668bc0127f07, type: 3}
   ItemPrefabs:
   - {fileID: 5161401157093409887, guid: 8a6e747e316499c45bdc9cbec9414512, type: 3}
+  - {fileID: 5161401157093409887, guid: a6b5c74c9882226498553ba11341b576, type: 3}
   BiomeCount: 4
   MaxMonsters: 5
   SubBiomes:
@@ -507,6 +508,8 @@ MonoBehaviour:
   CurrentEnergy: 310
   MaxEnergy: 310
   MoveSpeed: 20
+  CurrentMoney: 0
+  Quota: 1000
   Inventory: 00000000010000000a0000000a0000000a0000000a000000
 --- !u!1 &6904426250179738745
 GameObject:

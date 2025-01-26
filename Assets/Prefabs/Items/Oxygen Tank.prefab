@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3540705062076497108}
   - component: {fileID: 3865359908727940621}
   m_Layer: 0
-  m_Name: Alien Statue
+  m_Name: Oxygen Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,11 +101,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f197dce24ca93a94ca50fe5e371dfb7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemType: 6
-  FriendlyName: Alien Statue
+  ItemType: 9
+  FriendlyName: Oxygen Tank
   ItemSprite: {fileID: 0}
   Weight: 5
-  value: 100
+  value: 0
   CanBeThrown: 1
   IsIlluminated: 1
   LightRadius: 10
