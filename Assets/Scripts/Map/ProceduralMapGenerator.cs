@@ -10,6 +10,21 @@ public class ProceduralMapGenerator : MonoBehaviour
 {
     public GameObject Player;
 
+    
+    public static ProceduralMapGenerator Instance;
+    
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    
     [Header("Map Dimensions")]
     public int MapWidth = 50;
     public int MapHeight = 50;
@@ -29,6 +44,8 @@ public class ProceduralMapGenerator : MonoBehaviour
     public GameObject FloorPrefab;
     public Material FloorTexture;
     public Material WallTexture;
+
+    public GameObject TrapdoorPrefab;
     
     public Color EnemyNodeColor = Color.red;
     public Color SpawnNodeColor = Color.magenta;
@@ -60,6 +77,8 @@ public class ProceduralMapGenerator : MonoBehaviour
     
     public int MaxMonsters = 5;
     
+    public int TrapdoorCount = 3;
+    
     public struct Node {
         public GameObject obj;
         public NodeType type;
@@ -72,7 +91,8 @@ public class ProceduralMapGenerator : MonoBehaviour
         Enemy,
         Spawn,
         Item,
-        Seaweed
+        Seaweed,
+        Trapdoor
     }
     
     [SerializeField]
@@ -304,6 +324,13 @@ public class ProceduralMapGenerator : MonoBehaviour
                 obj.transform.parent = GameObject.FindWithTag(mapName).transform;
                 
                 break;
+            case NodeType.Trapdoor:
+                obj.GetComponent<Renderer>().material.color = Color.black;
+                GameObject trapdoor = Instantiate(TrapdoorPrefab, obj.transform.position, Quaternion.identity);
+                DestroyImmediate(obj);
+                obj = trapdoor;
+                obj.transform.parent = GameObject.FindWithTag(mapName).transform;
+                break;
         }
         
         //Set Z Axis to render above the floor
@@ -312,9 +339,7 @@ public class ProceduralMapGenerator : MonoBehaviour
         //Set Sorting Layer to Layer 2 - 'Above Floor'
         obj.GetComponent<Renderer>().sortingLayerName = "Above Floor";
         
-        //Remove Box Collider
-        DestroyImmediate(obj.GetComponent<BoxCollider2D>());
-        
+        if(DEBUG_USE_PLACEHOLDER_NODES) DestroyImmediate(obj.GetComponent<BoxCollider2D>());
         
         Node node = new Node
         {
@@ -612,6 +637,23 @@ public class ProceduralMapGenerator : MonoBehaviour
                     }
                 }
             }
+        }
+        
+        //Generate three random trapdoors
+        
+        for (int i = 0; i < TrapdoorCount; i++)
+        {
+            
+            //Grab a floor tile from the array
+            GameObject floorTile = GetRandomFloorTileObject();
+            
+            //Find the coordinates on the map 
+            int x = (int) (floorTile.transform.position.x / scaleFactor);
+            int y = (int) (floorTile.transform.position.y / scaleFactor);
+          
+
+            
+            CreateNode(new Vector2Int(x, y), NodeType.Trapdoor);
         }
     }
     
