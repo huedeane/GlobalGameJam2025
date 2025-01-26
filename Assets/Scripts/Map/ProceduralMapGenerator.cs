@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Unity.AI.Navigation;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -26,6 +28,12 @@ public class ProceduralMapGenerator : MonoBehaviour
     public GameObject FloorPrefab;
     public Material FloorTexture;
     public Material WallTexture;
+    
+    public Color EnemyNodeColor = Color.red;
+    public Color SpawnNodeColor = Color.magenta;
+    public Color ItemNodeColor = Color.blue;
+    
+    public Color SeaweedNodeColor = Color.green;
 
     [Header("Scaling")]
     public float scaleFactor = 1000f;
@@ -36,10 +44,81 @@ public class ProceduralMapGenerator : MonoBehaviour
     private int _maxGenerationSteps = 1000;
 
     public NavMeshSurface NavMeshController;
+
+    public List<Node> Nodes = new List<Node>();
+
+    public bool IsGenerationDone = false;
+    
+    public struct Node {
+        public GameObject obj;
+        public NodeType type;
+        public int x;
+        public int y;
+    }
+    
+    public enum NodeType
+    {
+        Enemy,
+        Spawn,
+        Item,
+        Seaweed
+    }
+    
+    [SerializeField]
+    private SubBiomeData[] SubBiomes;
+
+    [Serializable]
+    private enum SubBiome
+    {
+        SeaweedForest,
+        OpenPlains,
+        SpawnArea,
+        EnemyArea,
+        TreasureTrove
+    }
+    
+    [Serializable]
+    private struct SubBiomeData
+    {
+        public SubBiome biome;
+        
+        [Range(0, 25)]
+        public int GeneralDensity;
+        
+        [Range(0, 100)]
+        public int ItemDensity;
+        
+        [Range(0, 100)]
+        public int EnemyDensity;
+        
+        [Range(0, 100)]
+        public int SeaweedDensity;
+
+        public bool PlayerSpawnBiome;
+
+        public bool ClusterSeaweed;
+
+        public bool ClusterItems;
+        
+        public SubBiomeData(SubBiome biome, int generalDensity, int itemDensity, int enemyDensity, int seaweedDensity, bool playerSpawnBiome)
+        {
+            this.biome = biome;
+            GeneralDensity = generalDensity;
+            ItemDensity = itemDensity;
+            EnemyDensity = enemyDensity;
+            SeaweedDensity = seaweedDensity;
+            PlayerSpawnBiome = playerSpawnBiome;
+            ClusterSeaweed = false;
+            ClusterItems = false;
+
+            
+        }
+    }
     
     [Header("Debug")]
     //DEBUG: Skip NavMesh generation for performance
     public bool DEBUG_SKIP_NAVMESH_GENERATION = false;
+    public bool DEBUG_USE_PLACEHOLDER_NODES = false;
 
     private void Start()
     {
@@ -49,6 +128,7 @@ public class ProceduralMapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
+        IsGenerationDone = false;
         // Destroy old map
         GameObject _existingMap = GameObject.FindWithTag(mapName);
         if (_existingMap != null) DestroyImmediate(_existingMap);
@@ -104,7 +184,7 @@ public class ProceduralMapGenerator : MonoBehaviour
                 break;
         }
         
-        ApplyWallTextureToSurroundingVoidBlocks();
+        RunPostGenerationIteration();
         
         // Generate the NavMesh
         if (!DEBUG_SKIP_NAVMESH_GENERATION && NavMeshController != null)
@@ -113,6 +193,7 @@ public class ProceduralMapGenerator : MonoBehaviour
             NavMeshController.BuildNavMesh();
             Debug.Log("NavMesh generated.");
         }
+        IsGenerationDone = true;
     }
 
     private GameObject GenerateVoid(int x, int y, GameObject parent)
@@ -138,18 +219,48 @@ public class ProceduralMapGenerator : MonoBehaviour
         return obj;
     }
 
-
-    private void AddTextureToVoidItersectingWithFloor()
+    private void CreateNode(Vector2Int position, NodeType type)
     {
-        for (int x = 0; x < MapWidth; x++)
-        {
-            for (int y = 0; y < MapHeight; y++)
-            {
+        GameObject obj = GenerateVoid(position.x, position.y, GameObject.FindWithTag(mapName));
+        obj.name = $"{type} Node ({position.x},{position.y})";
+        //obj.tag = "Node";
 
-            }
+        switch (type)
+        {
+            case NodeType.Enemy:
+                obj.GetComponent<Renderer>().material.color = EnemyNodeColor;
+                break;
+            case NodeType.Spawn:
+                obj.GetComponent<Renderer>().material.color = SpawnNodeColor;
+                break;
+            case NodeType.Item:
+                obj.GetComponent<Renderer>().material.color = ItemNodeColor;
+                break;
+            case NodeType.Seaweed:
+                obj.GetComponent<Renderer>().material.color = SeaweedNodeColor;
+                break;
         }
+        
+        //Set Z Axis to render above the floor
+        obj.transform.position = new Vector3(position.x * scaleFactor, position.y * scaleFactor, -1); 
+        
+        //Set Sorting Layer to Layer 2 - 'Above Floor'
+        obj.GetComponent<Renderer>().sortingLayerName = "Above Floor";
+        
+        //Remove Box Collider
+        DestroyImmediate(obj.GetComponent<BoxCollider2D>());
+        
+        Node node = new Node
+        {
+            obj = obj,
+            type = type,
+            x = position.x,
+            y = position.y
+        };
+
+        Nodes.Add(node);
+        
     }
-    
 
     private Vector2Int MoveCursor(Vector2Int cursor, int direction, int distance)
     {
@@ -288,33 +399,155 @@ public class ProceduralMapGenerator : MonoBehaviour
     }
     
     // Call this after generating the map
-    private void ApplyWallTextureToSurroundingVoidBlocks()
+    private void RunPostGenerationIteration()
     {
+        //Populate a dictionary of subbiome data for more efficient access. Handle duplicates
+        Dictionary<SubBiome, SubBiomeData> subBiomeDict = new Dictionary<SubBiome, SubBiomeData>();
+        
+        foreach (SubBiomeData subBiome in SubBiomes)
+        {
+            if (!subBiomeDict.ContainsKey(subBiome.biome))
+            {
+                subBiomeDict.Add(subBiome.biome, subBiome);
+            }
+            else
+            {
+                Debug.LogWarning("Duplicate SubBiome found in SubBiomes array. Ignoring duplicate.");
+            }
+        }
+
+
+        
         for (int x = 0; x < MapWidth; x++)
         {
             for (int y = 0; y < MapHeight; y++)
             {
-                if (mapGrid[x, y] != null && mapGrid[x, y].CompareTag("Void"))
+                if (mapGrid[x, y] != null)
                 {
-                    if (IsAdjacentToFloor(x, y))
+                    if (mapGrid[x, y].CompareTag("Void"))
                     {
-                        // Convert the void block to a wall
-                        var obj = mapGrid[x, y];
-                        obj.name = $"Wall ({x},{y})";
-                        obj.tag = "Wall";
-                        obj.GetComponent<Renderer>().material = WallTexture;
-                        NavMeshModifier modifier = obj.AddComponent<NavMeshModifier>();
-                        modifier.overrideArea = true;
-                        modifier.area = 1;
+                        AddStoneToBorderWalls(x, y);
                     }
-                    else
+                    else if (mapGrid[x, y].CompareTag("Floor"))
                     {
-                        // If the void block is unnecessary, destroy it
-                        DestroyImmediate(mapGrid[x, y]);
-                        mapGrid[x, y] = null; // Ensure the reference is cleared
+                        (List<(Node node, int distance)> nearbyNodes, SubBiome regionBiome)  = GetNearbyContext(x, y);
+                        Debug.Log("At position " + x + ", " + y + " there are " + nearbyNodes.Count + " nearby nodes in the region " + regionBiome);
+                        
+                        
+                        //Get the subbiome data for the region
+                        SubBiomeData regionData = subBiomeDict[regionBiome];
+                        
+                        //Make sure enemies and items are more than 5 units away from each other
+                        bool disableEnemySpawn = false;
+                        bool disableItemSpawn = false;
+                        
+                        
+                        //If there is a non-seaweed node adjacent to this node, break to avoid important nodes right next to each other
+                        foreach ((Node node, int distance) nearbyNode in nearbyNodes)
+                        {
+                            if (nearbyNode.distance == 1 && nearbyNode.node.type != NodeType.Seaweed)
+                            {
+                                break;
+                            }
+                            else if (regionData.ClusterSeaweed && nearbyNode.distance <= 2 && nearbyNode.node.type == NodeType.Seaweed)
+                            {
+                                //10% chance to place a seaweed node and pass
+                                if (rnd.NextInt(0, 100) < 10)
+                                {
+                                    CreateNode(new Vector2Int(x, y), NodeType.Seaweed);
+                                    break;
+                                }
+                            }
+                            
+                            if (nearbyNode.node.type == NodeType.Enemy)
+                            {
+                                disableEnemySpawn = true;
+                            }
+                            else if (nearbyNode.node.type == NodeType.Item)
+                            {
+                                disableItemSpawn = true;
+                            }
+                            
+                        }
+                        
+
+
+
+
+                        
+                        //Determine if a node should be placed at this position
+                        if (rnd.NextInt(0, 100) < regionData.GeneralDensity)
+                        {
+                            //Determine the type of node to place
+                            NodeType nodeType = NodeType.Enemy;
+                            
+                            //Add All Percentages together and generate a random number between 0 and the total
+                            int total = regionData.ItemDensity + regionData.EnemyDensity + regionData.SeaweedDensity;
+                            int random = rnd.NextInt(0, total);
+                            
+                            //Determine the type of node to place based on the random number
+                            if (random < regionData.ItemDensity)
+                            {
+                                nodeType = disableItemSpawn ? NodeType.Seaweed : NodeType.Item;
+                            }
+                            else if (random < regionData.ItemDensity + regionData.EnemyDensity)
+                            {
+                                
+                                nodeType = disableEnemySpawn ? NodeType.Seaweed : NodeType.Enemy;
+                            }
+                            else
+                            {
+                                nodeType = NodeType.Seaweed;
+                            }
+                            
+                            CreateNode(new Vector2Int(x, y), nodeType);
+                        }
                     }
                 }
             }
+        }
+    }
+    
+    private (List<(Node node, int distance)> nearbyNodes, SubBiome regionBiome) GetNearbyContext(int x, int y)
+    {
+        int radius = 5;
+        
+        List<(Node node, int distance)> nearbyNodes = new List<(Node node, int distance)>();
+        SubBiome regionBiome = SubBiome.OpenPlains;
+        
+        foreach(Node node in Nodes)
+        {
+            int distance = Mathf.Abs(node.x - x) + Mathf.Abs(node.y - y);
+            if (distance <= radius)
+            {
+                nearbyNodes.Add((node, distance));
+            }
+        }
+        
+        //Sort by distance
+        nearbyNodes.Sort((a, b) => a.distance.CompareTo(b.distance));
+        
+        return (nearbyNodes, regionBiome);
+    }
+
+    private void AddStoneToBorderWalls(int x, int y)
+    {
+        if (IsAdjacentToFloor(x, y))
+        {
+            // Convert the void block to a wall
+            var obj = mapGrid[x, y];
+            obj.name = $"Wall ({x},{y})";
+            obj.tag = "Wall";
+            obj.GetComponent<Renderer>().material = WallTexture;
+            NavMeshModifier modifier = obj.AddComponent<NavMeshModifier>();
+            modifier.overrideArea = true;
+            modifier.area = 1;
+        }
+        else
+        {
+            // If the void block is unnecessary, destroy it
+            DestroyImmediate(mapGrid[x, y]);
+            mapGrid[x, y] = null; // Ensure the reference is cleared
         }
     }
     
