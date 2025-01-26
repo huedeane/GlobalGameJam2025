@@ -64,6 +64,7 @@ MonoBehaviour:
   AttackCollider: {fileID: 2595727250257536155}
   SpriteAnimatior: {fileID: 548578197119940275}
   Agent: {fileID: 383710692919313907}
+  Damage: 100
 --- !u!50 &7803690696713370778
 Rigidbody2D:
   serializedVersion: 5
