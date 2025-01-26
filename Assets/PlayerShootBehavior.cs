@@ -30,9 +30,13 @@ public class PlayerShootBehavior : MonoBehaviour
             case PlayerStats.ItemType.OxygenTank:
                 UseOxygenTank();
                 break;
+            
+            case PlayerStats.ItemType.Battery:
+                UseBattery();
+                break;
 
             default:
-                SellItem(currentItem);
+                NotificationTextController.Instance.ShowNotification("Right click to sell item", 2);
                 break;
         }
     }
@@ -68,6 +72,15 @@ public class PlayerShootBehavior : MonoBehaviour
         PlayerStats.Instance.CurrentOxygen = Math.Min(
             PlayerStats.Instance.CurrentOxygen + PlayerStats.Instance.MaxOxygen / 3,
             PlayerStats.Instance.MaxOxygen
+        );
+    }
+    
+    private void UseBattery()
+    {
+        PlayerStats.Instance.SetCurrentItem(PlayerStats.ItemType.None);
+        PlayerStats.Instance.CurrentEnergy = Math.Min(
+            PlayerStats.Instance.CurrentEnergy + PlayerStats.Instance.MaxEnergy / 2,
+            PlayerStats.Instance.MaxEnergy
         );
     }
 

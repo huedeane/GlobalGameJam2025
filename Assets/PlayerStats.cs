@@ -16,6 +16,7 @@ public class PlayerStats : MonoBehaviour
         OxygenGun,
         Flippers,
         OxygenTank,
+        Battery,
         None
     }
     
@@ -92,9 +93,9 @@ public class PlayerStats : MonoBehaviour
             // Decrement energy every 15 frames
             if (frameCounter >= 15)
             {
-                CurrentEnergy -= 1; // Reduce energy
+                CurrentEnergy -= 3; // Reduce energy
                 frameCounter = 0;   // Reset the counter
-                CurrentOxygen -= 1; // Reduce oxygen
+                CurrentOxygen -= 2; // Reduce oxygen
             }
         }
         else
@@ -240,6 +241,8 @@ public class PlayerStats : MonoBehaviour
                 return 100;
             case ItemType.OxygenGun:
                 return 0;
+            case ItemType.Battery:
+                return 150;
             case ItemType.Flippers:
                 return 50;
             case ItemType.OxygenTank:

@@ -416,6 +416,7 @@ MonoBehaviour:
   - {fileID: 5161401157093409887, guid: a6b5c74c9882226498553ba11341b576, type: 3}
   - {fileID: 5161401157093409887, guid: 65db85956b17e7a42ba2de41831759d8, type: 3}
   - {fileID: 5161401157093409887, guid: b3a17213787ad194d92eda696a7b43c4, type: 3}
+  - {fileID: 5161401157093409887, guid: 492b27d8255e22646b9ead5c9c863fe2, type: 3}
   BiomeCount: 4
   MaxMonsters: 5
   TrapdoorCount: 3
@@ -516,7 +517,7 @@ MonoBehaviour:
   CurrentMoney: 0
   Quota: 1000
   GameOver: {fileID: 0}
-  Inventory: 00000000010000000a0000000a0000000a0000000a000000
+  Inventory: 00000000010000000b0000000b0000000b0000000b000000
 --- !u!1 &6904426250179738745
 GameObject:
   m_ObjectHideFlags: 0

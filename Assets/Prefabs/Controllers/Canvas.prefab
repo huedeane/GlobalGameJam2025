@@ -975,6 +975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NotificationText: {fileID: 4561471532616126011}
+  timer: 0
 --- !u!23 &4599853591588999127
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1639,6 +1640,8 @@ MonoBehaviour:
     ItemSprite: {fileID: -2047445867847719061, guid: 4af947df45a31b844a728beb0cd07bab, type: 3}
   - ItemType: 8
     ItemSprite: {fileID: -7573354855677281409, guid: 041a869e903e57847890a43171696e70, type: 3}
+  - ItemType: 10
+    ItemSprite: {fileID: -5987153550897985747, guid: ce47210f372a1444bb6e16003a5c99a2, type: 3}
   SlotObjects:
   - {fileID: 0}
   - {fileID: 0}
