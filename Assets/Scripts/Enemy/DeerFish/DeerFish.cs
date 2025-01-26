@@ -76,7 +76,9 @@ public class DeerFish : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        PlayerStats.Instance.CurrentOxygen -= Damage;
+        if (collision.gameObject.CompareTag("Player")) { 
+            PlayerStats.Instance.CurrentOxygen -= Damage;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

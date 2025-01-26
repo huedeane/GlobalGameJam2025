@@ -73,7 +73,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 1
-  m_PointLightOuterRadius: 30
+  m_PointLightOuterRadius: 10
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -293,8 +293,9 @@ MonoBehaviour:
   SpriteAnimatior: {fileID: 8214031648291998091}
   AnglerIdleLight: {fileID: 6054293466472631737}
   AnglerEmergeLight: {fileID: 310773680208056933}
+  Agent: {fileID: 7901966582971802481}
   DetectionCollider: {fileID: 811377657301804603}
-  NumberOfAttack: 10
+  Damage: 200
 --- !u!212 &4949804639240617829
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -461,13 +462,13 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 12
-  m_Speed: 1000
-  m_Acceleration: 8
+  m_Speed: 150
+  m_Acceleration: 10
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 1
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
+  m_AutoBraking: 0
   m_AutoRepath: 1
   m_Height: 24
   m_BaseOffset: 12

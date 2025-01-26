@@ -33,6 +33,7 @@ public class PlayerStats : MonoBehaviour
 
     public int CurrentMoney = 0;
     public int Quota = 1000;
+    public GameObject GameOver;
     
     [SerializeField] public ItemType[] Inventory;
     
@@ -224,6 +225,14 @@ public class PlayerStats : MonoBehaviour
                 return 0;
         }
     }
-    
-    
+
+    public void Update()
+    {
+        if (CurrentOxygen <= 0)
+        {
+            GameOver.SetActive(true);
+        }
+    }
+
+
 }
