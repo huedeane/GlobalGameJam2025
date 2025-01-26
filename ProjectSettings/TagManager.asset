@@ -9,6 +9,8 @@ TagManager:
   - Floor
   - Map
   - Bubble
+  - MapGenerator
+  - Flashlight
   layers:
   - Default
   - TransparentFX
