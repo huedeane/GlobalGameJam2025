@@ -21,7 +21,7 @@ public class PlayerStats : MonoBehaviour
     
     public int CurrentInventorySlot = 0;
     
-    public int InventorySize = 5;
+    public int InventorySize = 6;
 
     public int MaxOxygen = 100;
     public int CurrentOxygen = 100;
@@ -35,6 +35,7 @@ public class PlayerStats : MonoBehaviour
     
     public static PlayerStats Instance;
     
+    private int frameCounter = 0; // Counter to track frames
     private void Awake()
     {
         if (Instance == null)
@@ -68,10 +69,23 @@ public class PlayerStats : MonoBehaviour
 
     public void FixedUpdate()
     {
-        //If Flashlight is equipped, reduce Energy by 1
+        // Increment the frame counter
+        frameCounter++;
+
+        // Check if Flashlight is equipped
         if (GetCurrentItem() == ItemType.FlashLight)
         {
-            CurrentEnergy -= 1;
+            // Decrement energy every 15 frames
+            if (frameCounter >= 15)
+            {
+                CurrentEnergy -= 1; // Reduce energy
+                frameCounter = 0;   // Reset the counter
+            }
+        }
+        else
+        {
+            // Reset the counter if Flashlight is not equipped
+            frameCounter = 0;
         }
     }
 
