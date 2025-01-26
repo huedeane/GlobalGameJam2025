@@ -35,7 +35,7 @@ public class ProceduralMapGenerator : MonoBehaviour
     private string mapName = "Map";
     private int _maxGenerationSteps = 1000;
 
-    public GameObject NavMeshController;
+    public MonoBehaviour NavMeshController;
     
     [Header("Debug")]
     //DEBUG: Skip NavMesh generation for performance
@@ -46,8 +46,12 @@ public class ProceduralMapGenerator : MonoBehaviour
         GenerateMap();
 
         // Generate the NavMesh
-        if (!DEBUG_SKIP_NAVMESH_GENERATION)
-            NavMeshController.GetComponent<NavMeshSurface>().BuildNavMesh();
+        if (!DEBUG_SKIP_NAVMESH_GENERATION && NavMeshController != null)
+        {
+            NavMeshController.SendMessage("BuildNavMesh");
+        }
+            
+          
     }
 
     public void GenerateMap()
@@ -130,8 +134,6 @@ public class ProceduralMapGenerator : MonoBehaviour
         // Normally this will auto-scale with the transform in 2D. 
         // 
         
-        //Make the void blocks transparent
-        renderer.material.color = new Color(0, 0, 0, 0);
         return obj;
     }
 
@@ -267,7 +269,9 @@ public class ProceduralMapGenerator : MonoBehaviour
             DestroyImmediate(obj.GetComponent<BoxCollider2D>());
             
             // Add NavMeshModifier
-            obj.AddComponent<NavMeshModifier>();
+            NavMeshModifier mod = obj.AddComponent<NavMeshModifier>();
+            mod.overrideArea = true;
+            mod.area = 0;
 
         }
     }

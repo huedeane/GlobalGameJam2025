@@ -272,7 +272,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      anglersprite_0: -1943862051731360667
+      anglersprite_1: -2997264439593913672
+      anglersprite_2: -8566619256674123056
+      anglersprite_3: 2990934377275040651
+      anglersprite_4: 5186368502157189929
+      anglersprite_5: 3925874879719895359
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
