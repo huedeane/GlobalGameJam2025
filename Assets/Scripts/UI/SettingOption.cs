@@ -15,15 +15,14 @@ public class SettingOption : MonoBehaviour
 
     public void SetSlider()
     {
-        AudioManager audioManager = GameObject.Find("Audio Manager").GetComponent<AudioManager>(); ;
-        MasterSlider.value = audioManager.masterVolume;
-        SoundEffectSlider.value = audioManager.soundEffectVolume;
-        BackgroundSlider.value = audioManager.backgroundSliderVolume;
+        MasterSlider.value = AudioManager.Instance.masterVolume;
+        SoundEffectSlider.value = AudioManager.Instance.soundEffectVolume;
+        BackgroundSlider.value = AudioManager.Instance.backgroundSliderVolume;
     }
 
     public void SetMasterVolume(float volume)
     {
-        GameObject.Find("Audio Manager").GetComponent<AudioManager>().masterVolume = volume;
+        AudioManager.Instance.masterVolume = volume;
         AudioControl.SetFloat("Master", volume);
         if (MasterSlider.value == -30)
         {
@@ -33,7 +32,7 @@ public class SettingOption : MonoBehaviour
 
     public void SetSoundEffectsVolume(float volume)
     {
-        GameObject.Find("Audio Manager").GetComponent<AudioManager>().soundEffectVolume = volume;
+        AudioManager.Instance.soundEffectVolume = volume;
 
         AudioControl.SetFloat("Sound Effect", volume);
         if (SoundEffectSlider.value == -30)
@@ -43,7 +42,7 @@ public class SettingOption : MonoBehaviour
     }
     public void SetBackgroundVolume(float volume)
     {
-        GameObject.Find("Audio Manager").GetComponent<AudioManager>().backgroundSliderVolume = volume;
+        AudioManager.Instance.backgroundSliderVolume = volume;
 
         AudioControl.SetFloat("Background", volume);
         if (BackgroundSlider.value == -30)
