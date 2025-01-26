@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerShootBehavior : MonoBehaviour
@@ -33,8 +34,7 @@ public class PlayerShootBehavior : MonoBehaviour
             else if (currentItem == PlayerStats.ItemType.OxygenTank)
             {
                 PlayerStats.Instance.SetCurrentItem(PlayerStats.ItemType.None);
-                PlayerStats.Instance.CurrentOxygen += PlayerStats.Instance.MaxOxygen/3;
-                
+                PlayerStats.Instance.CurrentOxygen = Math.Min(PlayerStats.Instance.CurrentOxygen + PlayerStats.Instance.MaxOxygen/3, PlayerStats.Instance.MaxOxygen);
             }
         }
     }
