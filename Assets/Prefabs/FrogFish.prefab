@@ -32,7 +32,7 @@ Transform:
   m_GameObject: {fileID: 1880213155022009797}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 530, y: 230, z: -1}
+  m_LocalPosition: {x: 364.6, y: 326.2, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -52,12 +52,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 374571aa80acfbe4083448c4da4fb4fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ProceduralMapGenerator: {fileID: 0}
   NumberOfAttack: 10
   DetectionRadius: 20
   DetectionGrowRate: 1
-  StalkMoveRate: 1
-  AttackRadius: 10
-  AttackMoveRate: 2
+  StalkMoveRate: 10
+  AttackRadius: 40
+  AttackMoveRate: 25
   DetectionCollider: {fileID: 8724109300644388108}
   CollisionCollider: {fileID: 4049737884905425085}
   AttackCollider: {fileID: 2595727250257536155}
@@ -218,7 +219,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 10
 --- !u!195 &383710692919313907
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -228,16 +229,16 @@ NavMeshAgent:
   m_GameObject: {fileID: 1880213155022009797}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 499.99997
-  m_Speed: 1000
+  m_Radius: 20
+  m_Speed: 10
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 10
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 999.99994
+  m_Height: 40
   m_BaseOffset: -1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -289,7 +290,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -303,7 +304,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -357,7 +358,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -371,7 +372,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0

@@ -52,7 +52,6 @@ public class DeerFish : MonoBehaviour
 
                     AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
                     Agent.SetDestination(AgentTarget.transform.position);
-                    Debug.Log("Found Floor at: " + AgentTarget.transform.position); ;
                     yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 5f);
                     break;
                 case DeerFishState.Attack:

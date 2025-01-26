@@ -44,12 +44,10 @@ public class AnglerFish : MonoBehaviour
                     yield return new WaitUntil(() =>
                     {
                         AnimatorStateInfo stateInfo = SpriteAnimatior.GetCurrentAnimatorStateInfo(0);
-                        Debug.Log(stateInfo);
                         return stateInfo.IsName("EmergeMove") && stateInfo.normalizedTime >= 1.0f;
                     });
                     AnglerIdleLight.enabled = false;
                     AnglerEmergeLight.enabled = true;
-                    Debug.Log("here");
 
                     AIState = AnglerFishState.Attack;
                     break;
