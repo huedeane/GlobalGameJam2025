@@ -104,7 +104,7 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    public void OnItemChange(int movementAmount = 1)
+    public void OnItemChange(int movementAmount = 1, ItemType newType = ItemType.BubbleGun)
     {
         int newSlot = -1;
         if(CurrentInventorySlot + movementAmount < 0 || CurrentInventorySlot + movementAmount >= InventorySize)
@@ -119,6 +119,11 @@ public class PlayerStats : MonoBehaviour
         
         ItemType oldItem = Inventory[CurrentInventorySlot];
         ItemType newItem = Inventory[newSlot];
+        
+        if(movementAmount == 0 && newType != ItemType.BubbleGun)
+        {
+            newItem = newType;
+        }
         
         //Logic for Unequipping old item if necessary
         switch (oldItem)
@@ -176,7 +181,14 @@ public class PlayerStats : MonoBehaviour
                 break;
         }
         
+        //Bubble gun is never going to be added, so if it's anything but a bubble gun, we can swap the item
+        
         CurrentInventorySlot = newSlot;
+        
+        if (newType != ItemType.BubbleGun)
+        {
+            Inventory[CurrentInventorySlot] = newType;
+        }
         
         PlayerInventoryHandler.Instance.SyncInventorySprites();
     }
@@ -203,8 +215,9 @@ public class PlayerStats : MonoBehaviour
 
     public void SetCurrentItem(ItemType type)
     {
-        Inventory[CurrentInventorySlot] = type;
-        OnItemChange(0);
+        OnItemChange(0, type);
+
+
     }
     
     public int GetItemValue(ItemType type)
