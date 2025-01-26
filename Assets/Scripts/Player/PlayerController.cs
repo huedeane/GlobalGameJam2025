@@ -4,7 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Animation Settings")]
     public Sprite[] walkingForwardFrames;
     public Sprite[] idleFrames;
@@ -17,17 +16,13 @@ public class PlayerController : MonoBehaviour
     private float animationTimer;
     private int currentFrame;
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        // Basic Rigidbody2D settings
+        
         rb.gravityScale = 0;
-        // If you want to allow manual rotation of your character, 
-        // you generally don't want to freeze rotation. 
-        // But if you need to keep the physics from spinning the character,
-        // keep this constraint and rely on transform for rotation.
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
@@ -37,6 +32,9 @@ public class PlayerController : MonoBehaviour
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
         movement = movement.normalized;
+
+        // Handle scroll wheel first
+        HandleMouseScroll();
 
         // Rotate towards mouse
         RotateTowardsMouse();
@@ -96,6 +94,27 @@ public class PlayerController : MonoBehaviour
                 currentFrame = (currentFrame + 1) % idleFrames.Length;
                 spriteRenderer.sprite = idleFrames[currentFrame];
             }
+        }
+    }
+    
+    private void HandleMouseScroll()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0f)
+        {
+            Debug.Log("Scrolling Up: Adding 1 to inventory slot");
+            PlayerStats.Instance.OnItemChange(-1);
+        }
+        else if (scroll < 0f)
+        {
+            Debug.Log("Scrolling Down: Subtracting 1 from inventory slot");
+            PlayerStats.Instance.OnItemChange(1);
+        }
+        
+        //Check if the player's current item is a flashlight
+        if(PlayerStats.Instance.GetCurrentItem() == PlayerStats.ItemType.FlashLight)
+        {
+
         }
     }
 }

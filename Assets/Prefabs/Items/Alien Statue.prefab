@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3540705062076497108}
   - component: {fileID: 3865359908727940621}
   m_Layer: 0
-  m_Name: Gold Bars
+  m_Name: Alien Statue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 3332408647713212673, guid: 34238ee30ce97ae408f5bd760cd72222, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -101,8 +101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f197dce24ca93a94ca50fe5e371dfb7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemIcon: {fileID: 3332408647713212673, guid: 34238ee30ce97ae408f5bd760cd72222, type: 3}
-  ItemName: Gold Bars
+  ItemType: 6
+  FriendlyName: Alien Statue
+  ItemSprite: {fileID: 0}
   Weight: 5
   value: 5
   CanBeThrown: 1

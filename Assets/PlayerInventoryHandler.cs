@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI; // Required for Image components
+using UnityEngine.UI;
 
 public class PlayerInventoryHandler : MonoBehaviour
 {
@@ -18,7 +18,10 @@ public class PlayerInventoryHandler : MonoBehaviour
     }
     
     public GameObject[] SlotObjects = new GameObject[5];
-    
+
+    // Padding for items inside slots
+    public float padding = 10f;
+
     void Awake()
     {
         if (Instance == null)
@@ -45,14 +48,14 @@ public class PlayerInventoryHandler : MonoBehaviour
 
             // Add an Image component to SlotChild
             Image childImage = slotChild.AddComponent<Image>();
-            childImage.raycastTarget = false; 
+            childImage.raycastTarget = false;
 
             // Set RectTransform properties
             RectTransform childRect = slotChild.GetComponent<RectTransform>();
             childRect.anchorMin = Vector2.zero; 
             childRect.anchorMax = Vector2.one; 
-            childRect.offsetMin = Vector2.zero; 
-            childRect.offsetMax = Vector2.zero; 
+            childRect.offsetMin = new Vector2(padding, padding);  // Add padding to the bottom-left corner
+            childRect.offsetMax = new Vector2(-padding, -padding); // Add padding to the top-right corner
             
             // Create a child for the dark overlay
             GameObject darkOverlay = new GameObject("DarkOverlay");
@@ -60,11 +63,10 @@ public class PlayerInventoryHandler : MonoBehaviour
 
             // Add an Image component to the overlay
             Image overlayImage = darkOverlay.AddComponent<Image>();
-            overlayImage.color = new Color(0f, 0f, 0f, 0.5f); 
+            overlayImage.color = new Color(0f, 0f, 0f, 0.8f); 
             overlayImage.raycastTarget = false; 
-            overlayImage.enabled = false; 
+            overlayImage.enabled = false;
 
-   
             RectTransform overlayRect = darkOverlay.GetComponent<RectTransform>();
             overlayRect.anchorMin = Vector2.zero; 
             overlayRect.anchorMax = Vector2.one;
@@ -121,6 +123,12 @@ public class PlayerInventoryHandler : MonoBehaviour
         {
             overlay.GetComponent<Image>().enabled = true;
         }
+    }
+    
+    public Sprite GetSpriteForItemType(PlayerStats.ItemType itemType)
+    {
+        InventorySprite inventorySprite = Array.Find(InventorySprites, x => x.ItemType == itemType);
+        return inventorySprite.ItemSprite;
     }
 
     public void ResetSlotHighlight(GameObject slot)

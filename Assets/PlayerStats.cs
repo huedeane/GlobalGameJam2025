@@ -133,9 +133,29 @@ public class PlayerStats : MonoBehaviour
                 break;
         }
         
+        CurrentInventorySlot = newSlot;
+        
         PlayerInventoryHandler.Instance.SyncInventorySprites();
-        
-        
+    }
+
+    public ItemType GetCurrentItem()
+    {
+        return Inventory[CurrentInventorySlot];
+    }
+    
+    public bool AttemptToAddItemToInventory(ItemType type)
+    {
+        for (int i = 0; i < InventorySize; i++)
+        {
+            if (Inventory[i] == ItemType.None)
+            {
+                Inventory[i] = type;
+                PlayerInventoryHandler.Instance.SyncInventorySprites();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     
