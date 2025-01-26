@@ -12,6 +12,7 @@ public enum AnglerFishState
     Disoriented,
     ResetState,
     Wait,
+    Wander,
 }
 
 public class AnglerFish : MonoBehaviour
@@ -23,13 +24,20 @@ public class AnglerFish : MonoBehaviour
     private GameObject AgentTarget;
     public NavMeshAgent Agent;
     public CircleCollider2D DetectionCollider;
+    public CircleCollider2D AttackCollider;
     public int Damage;
+    public int MaxHealth;
+    public int Health;
+    public float MovementSpeed;
+    public float AttackRadius;
+    public ProceduralMapGenerator ProceduralMapGenerator;
 
     IEnumerator Start()
     {
 
         //Initialize Value
         AIState = AnglerFishState.Idle;
+        ProceduralMapGenerator = GameObject.FindGameObjectWithTag("MapGenerator").GetComponent<ProceduralMapGenerator>();
 
         while (true)
         {
@@ -38,10 +46,11 @@ public class AnglerFish : MonoBehaviour
                 case AnglerFishState.Idle:
                     AnglerIdleLight.enabled = true;
                     AnglerEmergeLight.enabled = false;
+                    AttackCollider.radius = 0;
                     break;
                 case AnglerFishState.Emerge:
                     SpriteAnimatior.SetBool("IsEmerge", true);
-
+                    DetectionCollider.radius = 0;
                     yield return new WaitUntil(() =>
                     {
                         AnimatorStateInfo stateInfo = SpriteAnimatior.GetCurrentAnimatorStateInfo(0);
@@ -56,8 +65,19 @@ public class AnglerFish : MonoBehaviour
                     Agent.SetDestination(AgentTarget.transform.position);
                     break;
                 case AnglerFishState.Disoriented:
+                    SpriteAnimatior.SetBool("IsMoving", false);
+                    Agent.speed = 0;
+                    yield return new WaitForSeconds(1f);
+                    AIState = AnglerFishState.Wander;
                     break;
-                case AnglerFishState.ResetState:
+                case AnglerFishState.Wander:
+                    Agent.speed = MovementSpeed;
+                    AttackCollider.radius = AttackRadius;
+                    Health = MaxHealth;
+                    SpriteAnimatior.SetBool("IsMoving", true);
+                    AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
+                    Agent.SetDestination(AgentTarget.transform.position);
+                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 30f || AIState != AnglerFishState.Wander);
                     break;
             }
 
@@ -91,9 +111,25 @@ public class AnglerFish : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player")) {
+        if (collision.CompareTag("Player") && AIState == AnglerFishState.Idle) {
             AIState = AnglerFishState.Emerge;
             AgentTarget = collision.GameObject();
+        }
+
+        if (collision.CompareTag("Player") && AIState == AnglerFishState.Wander)
+        {
+            AIState = AnglerFishState.Attack;
+            AgentTarget = collision.GameObject();
+        }
+
+        if (collision.CompareTag("Bubble"))
+        {
+            Destroy(collision.gameObject);
+            Health--;
+            if (Health <= 0)
+            {
+                AIState = AnglerFishState.Disoriented;
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ public enum DeerFishState
     Wander,
     Attack,
     Disoriented,
+    RunAway,
     ResetState,
 }
 
@@ -22,6 +23,8 @@ public class DeerFish : MonoBehaviour
     public float AttackMoveRate = 20f;
     public ProceduralMapGenerator ProceduralMapGenerator;
     public int Damage;
+    public int MaxHealth;
+    public int Health;
 
 
     IEnumerator Start()
@@ -32,7 +35,7 @@ public class DeerFish : MonoBehaviour
 
         while (true)
         {
-
+            Debug.Log(AIState);
             switch (AIState)
             {
                 case DeerFishState.Wander:
@@ -42,16 +45,28 @@ public class DeerFish : MonoBehaviour
                     Agent.speed = WanderMoveRate;
                     AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
                     Agent.SetDestination(AgentTarget.transform.position);
-                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 5f || AIState == DeerFishState.Attack);
+                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 5f || AIState != DeerFishState.Wander);
                     break;
                 case DeerFishState.Attack:
                     Agent.SetDestination(AgentTarget.transform.position);
                     Agent.speed = AttackMoveRate;
                     break;
                 case DeerFishState.Disoriented:
+                    SpriteAnimatior.SetBool("IsMoving", false);
+                    Agent.speed = 0;
+                    yield return new WaitForSeconds(1f);
+                    AIState = DeerFishState.RunAway;
+                    break;
+                case DeerFishState.RunAway:
+                    SpriteAnimatior.SetBool("IsMoving", true);
+                    AgentTarget = ProceduralMapGenerator.GetRandomFloorTileObject();
+                    Agent.SetDestination(AgentTarget.transform.position);
+                    Agent.speed = AttackMoveRate * 2;
+                    yield return new WaitUntil(() => Vector3.Distance(AgentTarget.transform.position, transform.position) <= 20f);
+                    AIState = DeerFishState.ResetState;
                     break;
                 case DeerFishState.ResetState:
-
+                    Health = MaxHealth;
                     AIState = DeerFishState.Wander;
                     break;
             }
@@ -97,9 +112,26 @@ public class DeerFish : MonoBehaviour
 
         if (collision.CompareTag("Bubble"))
         {
-            AIState = DeerFishState.Disoriented;
+            Destroy(collision.gameObject);
+            Health--;
+            StartCoroutine(Stun());
+            if (Health <= 0)
+            {
+                AIState = DeerFishState.Disoriented;
+            }
+            
         }
 
+    }
+    private IEnumerator Stun()
+    {
+
+        float currentSpeed = Agent.speed;
+        Agent.speed = 0;
+
+        yield return new WaitForSeconds(.5f);
+
+        currentSpeed = Agent.speed;
     }
 }
 

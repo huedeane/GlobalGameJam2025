@@ -56,6 +56,8 @@ MonoBehaviour:
   AttackMoveRate: 25
   ProceduralMapGenerator: {fileID: 0}
   Damage: 100
+  MaxHealth: 2
+  Health: 2
 --- !u!58 &3229203728264173589
 CircleCollider2D:
   m_ObjectHideFlags: 0
